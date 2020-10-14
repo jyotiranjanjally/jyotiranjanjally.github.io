@@ -404,9 +404,10 @@ section {
   margin: 0 0 6px 0;
   text-transform: uppercase;
   display: block;
-  font-weight: 600;
+  font-weight: 500;
   font-family: "Poppins", sans-serif;
   color: #050d18;
+  font-size: 20px;
 }
 
 .skills .progress .skill .val {

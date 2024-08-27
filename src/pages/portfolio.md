@@ -95,7 +95,7 @@ Here are the certifications I’ve achieved.
 - Worked closely with product owners and stakeholders to understand
   requirements and create test plans.
 
-####Education
+#### Education
 
 ##### BACHELOR OF TECHNOLOGY IN COMPUTER SCIENCE AND ENGINEERING
 

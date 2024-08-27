@@ -56,7 +56,7 @@ Here are the certifications I’ve achieved.
 
 ### Experience
 
-##### SENIOR SOFTWARE ENGINEER - upGrad Education, Sep 2022 - Present
+##### AUTOMATION TEST LEAD - [Loylty Rewardz](https://www.loylty.com), Sep 2023 - Present
 
 ###### Roles and Responsibilities:
 
@@ -72,7 +72,23 @@ Here are the certifications I’ve achieved.
 - API automation using Java and REST-assured, API Performance testing using
   Gatling.
 
-##### SENIOR ASSOCIATE - AUTOMATION TEST ENGINEER - BNP Paribas, Dec 2018 - Sep 2022
+##### SENIOR SOFTWARE ENGINEER - [upGrad Education](https://www.upgrad.com), Sep 2022 - Aug 2023
+
+###### Roles and Responsibilities:
+
+- Responsible for Design, develop, and maintain automated test scripts using
+  Selenium WebDriver, BDD and Java
+- Designed E2E flow for Live Session application, which used for performance
+  testing, to find out the maximum concurrent users allowed.
+- Provided regular reports on the status of testing and defects to the project
+  team and stakeholders.
+- Coordinated with cross-functional teams to ensure test coverage and timely
+  delivery of products.
+- Mentored junior team members on test automation best practices and tools.
+- API automation using Java and REST-assured, API Performance testing using
+  Gatling.
+
+##### SENIOR ASSOCIATE - AUTOMATION TEST ENGINEER - [BNP Paribas](https://group.bnpparibas/en/), Dec 2018 - Sep 2022
 
 ###### Roles and Responsibilities:
 
@@ -84,7 +100,7 @@ Here are the certifications I’ve achieved.
   the QA team, resulting in increased efficiency and better alignment with
   development teams
 
-##### AUTOMATION TEST ENGINEER - Zycus Infotech Pvt. Ltd , July 2014 - Dec 2018
+##### AUTOMATION TEST ENGINEER - [Zycus](https://www.zycus.com/) , July 2014 - Dec 2018
 
 ###### Roles and Responsibilities:
 
@@ -95,18 +111,18 @@ Here are the certifications I’ve achieved.
 - Worked closely with product owners and stakeholders to understand
   requirements and create test plans.
 
-#### Education
+### Education
 
 ##### BACHELOR OF TECHNOLOGY IN COMPUTER SCIENCE AND ENGINEERING
 
-###### BPUT / Orissa Engineering College, 2010 - 2014
+###### [BPUT](https://www.bput.ac.in/) / [Orissa Engineering College](https://en.wikipedia.org/wiki/Orissa_Engineering_College), 2010 - 2014
 
 - Completed B.Tech in Computer Science And Engineering from Orissa
   Engineering College, Bhubaneswar with CGPA of 7.14
 
 ##### INTERMEDIATE IN SCIENCE
 
-###### Jawahar Navodaya Vidyalaya, Surangi, Ganjam, 2009
+###### [Jawahar Navodaya Vidyalaya, Surangi, Ganjam](https://navodaya.gov.in/nvs/nvs-school/Ganjam/en/contact-us/JNV/#), 2009
 
 - Completed Intermediate In Science in 2009 from Jawahar Navodaya Vidyalaya,
   Ganjam with 56%.

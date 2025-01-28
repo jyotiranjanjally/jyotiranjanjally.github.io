@@ -6,7 +6,9 @@ slug: agi-future
 featured: true
 ogImage: https://user-images.githubusercontent.com/53733092/215771435-25408246-2309-4f8b-a781-1f3d93bdf0ec.png
 tags:
-  - ["AI", "AGI", "Artificial Intelligence", "Future Technologies"]
+  - ai
+  - agi
+  - artificial intelligence
 description: Artificial General Intelligence (AGI) is often seen as the holy grail of AI. In this article, we explore what AGI is, how it differs from narrow AI, and its potential impact on society.
 ---
 

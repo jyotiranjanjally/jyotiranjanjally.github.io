@@ -2,7 +2,7 @@
 author: Jyoti Ranjan Jally
 pubDatetime: 2025-01-28T10:40:00.737Z
 title: "Exploring Artificial General Intelligence: The Future of AI"
-slug: astro-paper-2
+slug: agi-future
 featured: true
 ogImage: https://user-images.githubusercontent.com/53733092/215771435-25408246-2309-4f8b-a781-1f3d93bdf0ec.png
 tags:

@@ -62,9 +62,24 @@ Where \(n\) is the number of data points.
 
 Below is a complete, runnable example using `scikit-learn` and `matplotlib`.
 
+## Jupyter Notebook Example
+
+You can view and explore the complete Jupyter Notebook version of this code below:
+
+<iframe
+  src="https://nbviewer.org/github/jyotiranjanjally/jyotiranjanjally.github.io/blob/main/src/content/data/simple_linear_regression.ipynb"
+  width="100%"
+  height="600"
+  frameborder="0"
+  allowfullscreen
+></iframe>
+
+
 ### Import Libraries
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
+
+

@@ -14,18 +14,18 @@ export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
 
   const postResult = posts.map(post => ({
-    params: { slug: post.slug },
+    params: { slug: post.slug.split("/") }, // ✅ fix for nested slugs
     props: { post },
   }));
 
   const pagePaths = getPageNumbers(posts.length).map(pageNum => ({
-    params: { slug: String(pageNum) },
+    params: { slug: [String(pageNum)] },
   }));
 
   return [...postResult, ...pagePaths];
 }
 
-const { slug } = Astro.params;
+const slug = Array.isArray(Astro.params.slug) ? Astro.params.slug.join("/") : Astro.params.slug;
 const { post } = Astro.props;
 
 const posts = await getCollection("blog");

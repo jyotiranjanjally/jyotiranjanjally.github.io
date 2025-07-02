@@ -3,12 +3,13 @@ author: Jyoti Ranjan Jally
 pubDatetime: 2024-07-02T12:00:00Z
 title: "Understanding Linear Regression: Theory, Equations, and Python Code with Visualization"
 description: "A detailed, all-in-one guide to linear regression covering the theory, mathematical equations, Python code, and visualizations in one page."
+draft: false
+featured: true
 tags:
   - machine-learning
   - regression
   - python
   - data-science
-draft: false
 ---
 
 # Understanding Linear Regression: Theory, Equations, and Python Code with Visualization
@@ -62,7 +63,9 @@ Where \(n\) is the number of data points.
 
 Below is a complete, runnable example using `scikit-learn` and `matplotlib`.
 
-## Jupyter Notebook Example
+---
+
+### Jupyter Notebook Example
 
 You can view and explore the complete Jupyter Notebook version of this code below:
 
@@ -74,6 +77,7 @@ You can view and explore the complete Jupyter Notebook version of this code belo
   allowfullscreen
 ></iframe>
 
+---
 
 ### Import Libraries
 
@@ -81,5 +85,4 @@ You can view and explore the complete Jupyter Notebook version of this code belo
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
-
-
+```

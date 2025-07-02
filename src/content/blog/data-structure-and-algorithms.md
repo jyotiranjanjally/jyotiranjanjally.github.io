@@ -1,7 +1,7 @@
 ---
 author: Jyoti Ranjan Jally
-pubDatetime: 2024-07-02T10:22:00Z
-modDatetime: 2025-07-02T10:22:47.400Z
+pubDatetime: 2024-07-01T10:22:00Z
+modDatetime: 2025-07-01T10:22:47.400Z
 title: Data Structure and Algorithms
 featured: true
 draft: false

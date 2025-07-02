@@ -1,10 +1,17 @@
 ---
-title: "Data Structure and Algorithms"
-description: "Data Structure and Algorithms"
-pubDate: "2025-07-02"
-heroImage: "/images/my-hero-image.jpg"  # optional: image shown in listing
-tags: ["dsa", "sorting"]
+author: Jyoti Ranjan Jally
+pubDatetime: 2025-07-02T15:22:00Z
+modDatetime: 2025-07-02T09:12:47.400Z
+title: Data Structure and Algorithms
+slug: Data Structure and Algorithms
+featured: true
+draft: false
+tags:
+  - dsa
+description:
+  Data Structure and Algorithms
 ---
+
 # Time Complexity and Space Complexity
 ## Part 1: Time and Space Complexity
 ### What is Time Complexity?

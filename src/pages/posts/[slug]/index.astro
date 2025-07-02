@@ -14,12 +14,12 @@ export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
 
   const postResult = posts.map(post => ({
-    params: { slug: post.slug.split("/") }, // ✅ Array for nested slugs
+    params: { slug: post.slug }, // ✅ FIXED: use string only
     props: { post },
   }));
 
   const pagePaths = getPageNumbers(posts.length).map(pageNum => ({
-    params: { slug: [String(pageNum)] }, // ✅ Array for pagination pages
+    params: { slug: String(pageNum) },
   }));
 
   return [...postResult, ...pagePaths];

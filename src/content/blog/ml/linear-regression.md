@@ -1,8 +1,8 @@
 ---
 author: Jyoti Ranjan Jally
 pubDatetime: 2024-07-02T12:00:00Z
-title: Understanding Linear Regression: Theory, Equations, and Python Code with Visualization
-description: A detailed, all-in-one guide to linear regression covering the theory, mathematical equations, Python code, and visualizations in one page.
+title: "Understanding Linear Regression: Theory, Equations, and Python Code with Visualization"
+description: "A detailed, all-in-one guide to linear regression covering the theory, mathematical equations, Python code, and visualizations in one page."
 tags:
   - machine-learning
   - regression

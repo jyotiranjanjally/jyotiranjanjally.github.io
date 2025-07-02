@@ -1,7 +1,7 @@
 ---
 author: Jyoti Ranjan Jally
-pubDatetime: 2025-07-02T15:22:00Z
-modDatetime: 2025-07-02T09:12:47.400Z
+pubDatetime: 2025-07-02T10:22:00Z
+modDatetime: 2025-07-02T10:22:47.400Z
 title: Data Structure and Algorithms
 slug: data-structure-and-algorithms
 featured: true

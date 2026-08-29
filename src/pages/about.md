@@ -1,36 +1,30 @@
 ---
 layout: ../layouts/AboutLayout.astro
 title: "About"
+description: "About Jyoti Ranjan Jally, a Machine Learning Developer and Quality Engineering Lead."
 ---
 
-AstroPaper is a minimal, responsive and SEO-friendly Astro blog theme. I designed and crafted this based on [my personal blog](https://satnaing.dev/blog).
+## Building dependable intelligent systems
 
-This theme is aimed to be accessible out of the box. Light and dark mode are supported by
-default and additional color schemes can also be configured.
+I am Jyoti Ranjan Jally, a Machine Learning Developer and Quality Engineering Lead. I combine machine learning, data analysis, automation, and software-quality engineering to build dependable products that solve practical business problems.
 
-This theme is self-documented \_ which means articles/posts in this theme can also be considered as documentations. So, see the documentation for more info.
+My career has been grounded in high-quality software delivery: designing automation frameworks, improving CI/CD feedback loops, validating APIs, and testing systems at scale. I bring that same discipline to ML work—clear problem definition, reproducible experimentation, meaningful evaluation, and maintainable implementation.
 
 <div>
-  <img src="/assets/dev.svg" class="sm:w-1/2 mx-auto" alt="coding dev illustration">
+  <img src="/assets/dev.svg" class="sm:w-1/2 mx-auto" alt="Machine learning developer illustration">
 </div>
 
-## Tech Stack
+## What I work on
 
-This theme is written in vanilla JavaScript (+ TypeScript for type checking) and a little bit of ReactJS for some interactions. TailwindCSS is used for styling; and Markdown is used for blog contents.
+- Machine learning and deep-learning foundations, data analysis, and model evaluation
+- Intelligent automation, API validation, and performance engineering
+- Python, Java, SQL, CI/CD, and data-driven engineering workflows
+- Clear technical writing on AI, agentic systems, and practical software development
 
-## Features
+## How I work
 
-Here are certain features of this site.
+I value outcomes that can be understood and trusted. That means collaborating early with stakeholders, validating assumptions with data, making quality measurable, and documenting decisions so work can be reproduced and improved.
 
-- fully responsive and accessible
-- SEO-friendly
-- light & dark mode
-- fuzzy search
-- super fast performance
-- draft posts
-- pagination
-- sitemap & rss feed
-- highly customizable
+To explore my experience, visit the [portfolio](/portfolio/). For examples of my technical work and writing, see [projects](/projects/) and [posts](/posts/).
 
-If you like this theme, you can star/contribute to the [repo](https://github.com/satnaing/astro-paper).  
-Or you can even give any feedback via my [email](mailto:contact@satnaing.dev).
+For collaboration or opportunities, reach me at [jyotiranjanjally@gmail.com](mailto:jyotiranjanjally@gmail.com).

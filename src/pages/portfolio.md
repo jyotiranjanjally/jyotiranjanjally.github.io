@@ -1,130 +1,119 @@
 ---
 layout: ../layouts/AboutLayout.astro
 title: "Portfolio"
+description: "Professional experience, technical expertise, and certifications of Jyoti Ranjan Jally, Machine Learning Developer and Quality Engineering Lead."
+activeNav: "portfolio"
 ---
 
 ### About Me
 
-I am a passionate Data Science Enthusiast and a dedicated Full-Stack Automation Test Engineer with a strong foundation in both software development and data analytics. My journey in the tech world has equipped me with a unique blend of skills that allow me to seamlessly integrate automation testing with data-driven insights. With a keen eye for detail and a love for solving complex problems, I am committed to driving quality and efficiency in every project I undertake. Whether it's designing robust automation frameworks or exploring the potential of data to uncover actionable insights, I am always eager to take on new challenges and continuously evolve in the ever-changing tech landscape.
+I am an experienced Machine Learning Developer who builds practical, reliable
+AI solutions from data exploration through deployment. I combine a strong
+foundation in Python, machine learning, deep learning, and data analytics with
+years of experience delivering high-quality software in fast-moving product
+teams. My work focuses on turning complex data into models and insights that
+solve real business problems.
+
+I am particularly interested in intelligent automation, predictive systems,
+natural language processing, and production-ready ML workflows. With a
+quality-first engineering mindset, I design solutions that are not only
+accurate, but also testable, maintainable, and ready to scale.
 
 <div>
-  <img src="/assets/dev.svg" class="sm:w-1/2 mx-auto" alt="coding dev illustration">
+  <img src="/assets/dev.svg" class="sm:w-1/2 mx-auto" alt="Machine learning developer illustration">
 </div>
 
-### Skills:
+### Core Expertise
 
-- Proficiency in developing and maintaining test automation frameworks, scripts,
-  and tools using programming languages such as Java, Python. Experience with
-  open-source test automation tools such as Selenium, BDD, Serenity, TestNG.
-- API testing using Postman, REST-assured and Gatling
-- Continuous Integration and Continuous Deployment (CI/CD) using Jenkins
-- Agile methodology and Scrum framework
-- Defect tracking tools, such as Jira, HP ALM and Bugzilla
-- Version control systems, such as Git
-- Strong communication and team collaboration skills
+- End-to-end machine learning development: data preparation, feature
+  engineering, model training, evaluation, and iteration
+- Supervised and unsupervised learning for classification, regression,
+  clustering, and forecasting use cases
+- Deep learning concepts including neural networks, convolutional neural
+  networks, and sequence models
+- Data analysis, visualization, and statistical reasoning to uncover actionable
+  insights
+- Building robust Python applications and automation workflows
+- API design, integration, testing, and performance validation
+- CI/CD, version control, and Agile delivery practices for dependable software
+  releases
 
-### Languages and Tools
+### Technologies and Tools
 
-- Java
-- Python
-- BitBucket
-- Jenkins
-- Selenium
-- Cucumber BDD
-- Gatling
-- Postman
-- SQL
-- Linux basic
-- JIRA, HP ALM
-- Selenium
-- Pytest
+- **Languages:** Python, Java, SQL
+- **Machine Learning & Data:** scikit-learn, Pandas, NumPy, Matplotlib,
+  Jupyter Notebook
+- **Deep Learning:** TensorFlow, Keras, neural networks, CNNs, sequence models
+- **Software Engineering:** Git, Bitbucket, Linux, REST APIs
+- **Testing & Quality:** Selenium, Pytest, Cucumber BDD, TestNG,
+  REST-assured, Postman, Gatling
+- **Delivery & Collaboration:** Jenkins, Jira, HP ALM, Agile/Scrum
+
+### Selected Focus Areas
+
+- Predictive modeling and data-driven decision systems
+- Generative AI, agentic AI, and the path toward artificial general
+  intelligence
+- Model evaluation, experimentation, and responsible AI development
+- ML-enabled test automation and intelligent quality engineering
+- Scalable data workflows and API-based ML integrations
 
 ### Certifications
 
-Here are the certifications I’ve achieved.
+Here are selected certifications that support my ML and AI expertise.
 
 - [Machine Learning](https://courses.edx.org/certificates/8c323bfc58564386b1252f8f40d381da)
 - [Artificial Intelligence](https://courses.edx.org/certificates/28cd95f21504480fa88e212b21a74266)
+- [Deep Learning Specialization](https://www.coursera.org/account/accomplishments/specialization/certificate/WCT39V9U7UDH)
 - [Convolutional Neural Networks](https://www.coursera.org/account/accomplishments/certificate/S5LSA4YJZ5VP)
-- [Deep Learning](https://www.coursera.org/account/accomplishments/specialization/certificate/WCT39V9U7UDH)
 - [Improving Deep Neural Networks](https://www.coursera.org/account/accomplishments/certificate/XHZRWVG22GZP)
 - [Neural Networks and Deep Learning](https://www.coursera.org/account/accomplishments/certificate/A5DZVXFSZQTD)
 - [Sequence Models](https://www.coursera.org/account/accomplishments/certificate/UQNDQCUPJ2MB)
-- [Sequence Models](https://www.coursera.org/account/accomplishments/certificate/W468HSVNG582)
 - [Python](https://www.hackerrank.com/certificates/5cfbb9e39ddd)
 - [BNP Paribas Cloud 101](https://www.credly.com/badges/989702cd-379d-4b7e-be32-093c4856319a?source=linked_in_profile)
 
-### Experience
+### Professional Experience
 
-##### AUTOMATION TEST LEAD - [Loylty Rewardz](https://www.loylty.com), Sep 2023 - Present
+##### AUTOMATION TEST LEAD — [Loylty Rewardz](https://www.loylty.com), Sep 2023 – Present
 
-###### Roles and Responsibilities:
+- Lead the design and delivery of automation solutions for business-critical
+  applications using Java, Selenium WebDriver, BDD, and REST-assured.
+- Partner with product and engineering teams to improve quality, release
+  confidence, and delivery speed.
+- Designed end-to-end flows for live-session performance testing to identify
+  concurrent-user capacity and system bottlenecks.
+- Mentor engineers on automation design, API testing, performance testing, and
+  quality engineering practices.
 
-- Responsible for Design, develop, and maintain automated test scripts using
-  Selenium WebDriver, BDD and Java
-- Designed E2E flow for Live Session application, which used for performance
-  testing, to find out the maximum concurrent users allowed.
-- Provided regular reports on the status of testing and defects to the project
-  team and stakeholders.
-- Coordinated with cross-functional teams to ensure test coverage and timely
-  delivery of products.
-- Mentored junior team members on test automation best practices and tools.
-- API automation using Java and REST-assured, API Performance testing using
-  Gatling.
+##### SENIOR SOFTWARE ENGINEER — [upGrad Education](https://www.upgrad.com), Sep 2022 – Aug 2023
 
-##### SENIOR SOFTWARE ENGINEER - [upGrad Education](https://www.upgrad.com), Sep 2022 - Aug 2023
+- Developed and maintained scalable UI and API automation suites for an
+  education technology platform.
+- Collaborated across engineering, product, and QA teams to strengthen test
+  coverage and provide clear visibility into product quality.
+- Used performance and API testing to validate critical learner experiences and
+  platform reliability.
 
-###### Roles and Responsibilities:
+##### SENIOR ASSOCIATE, AUTOMATION TEST ENGINEER — [BNP Paribas](https://group.bnpparibas/en/), Dec 2018 – Sep 2022
 
-- Responsible for Design, develop, and maintain automated test scripts using
-  Selenium WebDriver, BDD and Java
-- Designed E2E flow for Live Session application, which used for performance
-  testing, to find out the maximum concurrent users allowed.
-- Provided regular reports on the status of testing and defects to the project
-  team and stakeholders.
-- Coordinated with cross-functional teams to ensure test coverage and timely
-  delivery of products.
-- Mentored junior team members on test automation best practices and tools.
-- API automation using Java and REST-assured, API Performance testing using
-  Gatling.
+- Built and maintained Selenium and Java automation frameworks, reducing
+  regression-testing time by 30%.
+- Implemented CI pipelines with Jenkins and Git to deliver faster feedback and
+  broader automated coverage.
+- Helped teams adopt Agile, shift-left testing, and same-sprint automation
+  practices.
 
-##### SENIOR ASSOCIATE - AUTOMATION TEST ENGINEER - [BNP Paribas](https://group.bnpparibas/en/), Dec 2018 - Sep 2022
+##### AUTOMATION TEST ENGINEER — [Zycus](https://www.zycus.com/), Jul 2014 – Dec 2018
 
-###### Roles and Responsibilities:
-
-- Develop and maintain automation frameworks using Selenium WebDriver and
-  Java, resulting in a 30% reduction in regression testing time
-- Implement and maintain continuous integration pipelines using Jenkins and
-  Git, resulting in faster feedback and increased test coverage.
-- Lead the adoption of Agile methodologies line same sprint automation across
-  the QA team, resulting in increased efficiency and better alignment with
-  development teams
-
-##### AUTOMATION TEST ENGINEER - [Zycus](https://www.zycus.com/) , July 2014 - Dec 2018
-
-###### Roles and Responsibilities:
-
-- Designing and developing automation frameworks for web applications using
-  Selenium WebDriver, TestNG, and Java.
-- Collaborating with developers and business analysts to identify and resolve
-  defects and issues.
-- Worked closely with product owners and stakeholders to understand
-  requirements and create test plans.
+- Designed automation frameworks for web applications using Selenium WebDriver,
+  TestNG, and Java.
+- Worked with developers, analysts, and product owners to translate
+  requirements into effective test strategies and reliable releases.
 
 ### Education
 
 ##### BACHELOR OF TECHNOLOGY IN COMPUTER SCIENCE AND ENGINEERING
 
-###### [BPUT](https://www.bput.ac.in/) / [Orissa Engineering College](https://en.wikipedia.org/wiki/Orissa_Engineering_College), 2010 - 2014
+###### [BPUT](https://www.bput.ac.in/) / [Orissa Engineering College](https://en.wikipedia.org/wiki/Orissa_Engineering_College), 2010 – 2014
 
-- Completed B.Tech in Computer Science And Engineering from Orissa
-  Engineering College, Bhubaneswar with CGPA of 7.14
-
-##### INTERMEDIATE IN SCIENCE
-
-###### [Jawahar Navodaya Vidyalaya, Surangi, Ganjam](https://navodaya.gov.in/nvs/nvs-school/Ganjam/en/contact-us/JNV/#), 2009
-
-- Completed Intermediate In Science in 2009 from Jawahar Navodaya Vidyalaya,
-  Ganjam with 56%.
-- Completed Matriculation in 2007 from Jawahar Navodaya Vidyalaya, Ganjam
-  with 74%.
+- B.Tech in Computer Science and Engineering, CGPA: 7.14.

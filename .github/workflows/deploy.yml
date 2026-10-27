@@ -21,10 +21,13 @@ jobs:
       - name: Checkout your repository using git
         uses: actions/checkout@v4
       - name: Prepare static site
+        run: python3 scripts/build.py --stage
+      - name: Validate generated site
+        run: python3 scripts/validate.py
+      - name: Validate equations and interactive models
         run: |
-          mkdir -p _site
-          cp index.html articles.html style.css app.js favicon.svg _site/
-          cp -R assets _site/assets
+          node scripts/test-content.cjs
+          node scripts/test-charts.cjs
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -33,3 +33,8 @@ pnpm-debug.log*
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+# Generated deployment staging and Python caches
+_site/
+__pycache__/
+*.pyc

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>End-to-End Regression Project Using a Real Dataset | Jyoti Ranjan Jally</title><meta name="description" content="Build a reproducible diabetes-dataset experiment with a baseline, fold-local preprocessing, model selection, and a final test audit.">
+<link rel="canonical" href="https://jyotiranjanjally.github.io/articles/end-to-end-regression-project/"><meta property="og:title" content="End-to-End Regression Project Using a Real Dataset">
+<meta property="og:description" content="Build a reproducible diabetes-dataset experiment with a baseline, fold-local preprocessing, model selection, and a final test audit."><meta property="og:url" content="https://jyotiranjanjally.github.io/articles/end-to-end-regression-project/">
+<meta property="og:type" content="article"><meta name="theme-color" content="#f5f4f1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/assets/hub/hub.css">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('portfolio-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){document.documentElement.dataset.theme='light'}</script>
+<link rel="stylesheet" href="/assets/hub/vendor/katex/katex.min.css">
+<script defer src="/assets/hub/vendor/katex/katex.min.js"></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "End-to-End Regression Project Using a Real Dataset", "description": "Build a reproducible diabetes-dataset experiment with a baseline, fold-local preprocessing, model selection, and a final test audit.", "datePublished": "2026-10-27", "author": {"@type": "Person", "name": "Jyoti Ranjan Jally", "url": "https://jyotiranjanjally.github.io"}, "mainEntityOfPage": "https://jyotiranjanjally.github.io/articles/end-to-end-regression-project/", "articleSection": ["Machine Learning", "Supervised Learning", "Regression"], "keywords": ["project", "diabetes", "pipelines"], "proficiencyLevel": "Advanced", "inLanguage": "en"}</script><script defer src="/app.js"></script><script defer src="/assets/hub/hub.js"></script>
+<script defer src="/assets/hub/charts.js"></script></head><body id="top" class="knowledge-hub">
+<a class="skip" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="/index.html" aria-label="Jyoti, home">jyoti<span class="brand-dot">.</span><span class="brand-caption">MACHINE LEARNING ENGINEER</span></a><button class="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch theme"><svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></svg><svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button><button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav"><span></span><span></span></button><nav id="main-nav" aria-label="Main navigation"><a href="/index.html#work">Projects</a><a href="/index.html#approach">Expertise</a><a href="/articles.html" aria-current="page">Articles</a><a class="nav-contact resume-link" href="/assets/Jyoti-Ranjan-Jally-Resume.pdf" download="Jyoti-Ranjan-Jally-Resume.pdf">Resume <span aria-hidden="true"><svg class="icon icon-arrow-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16m-6-6 6 6 6-6"/></svg></span></a></nav></header>
+<div class="reading-progress" aria-hidden="true"></div><main id="main" class="wrap"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/articles.html">Knowledge hub</a> / <a href="/articles.html?category=Machine+Learning">Machine Learning</a> / <a href="/articles.html?category=Machine+Learning&amp;topic=Supervised+Learning">Supervised Learning</a> / <a href="/articles.html?category=Machine+Learning&amp;topic=Regression">Regression</a></nav>
+<header class="reading-header"><p class="eyebrow">THE REGRESSION SERIES / 12 OF 12</p><h1>End-to-End Regression Project Using a Real Dataset</h1><p class="standfirst">Build a reproducible diabetes-dataset experiment with a baseline, fold-local preprocessing, model selection, and a final test audit.</p><div class="reading-meta"><span class="difficulty">Advanced</span><span>13 min read</span><time datetime="2026-10-27">27 October 2026</time></div><nav class="article-tags" aria-label="Article tags"><a href="/articles.html?q=project">project</a><a href="/articles.html?q=diabetes">diabetes</a><a href="/articles.html?q=pipelines">pipelines</a></nav></header>
+<div class="reading-layout"><aside class="toc"><nav aria-label="Table of contents"><p class="eyebrow">ON THIS PAGE</p><ol><li><a href="#introduction">Build a complete, reproducible experiment</a></li><li><a href="#problem">Define the prediction contract</a></li><li><a href="#data">Load raw features and inspect training data</a></li><li><a href="#mathematics">Relate the pipeline to the objective</a></li><li><a href="#worked-example">Trace one hypothetical prediction</a></li><li><a href="#python">Execute the whole project</a></li><li><a href="#diagnostics">Interpret the results you actually obtain</a></li><li><a href="#engineering">Make the experiment reproducible</a></li><li><a href="#limitations">What this project cannot establish</a></li><li><a href="#interview">Interview questions</a></li><li><a href="#practice">Extensions and takeaways</a></li></ol></nav><a href="/articles.html?category=Machine+Learning&amp;topic=Regression">Explore this topic ↗</a></aside>
+<article class="tutorial"><h2 id="introduction">1. Build a complete, reproducible experiment</h2>
+<p>This project connects the regression series into one workflow: define a target, inspect a real dataset, reserve a test set, establish a baseline, select a model with training-only cross-validation, and inspect final errors. The goal is a credible experiment whose steps can be audited and reproduced.</p>
+<p>We use the diabetes dataset bundled with scikit-learn. It contains 442 observations, ten baseline variables, and a quantitative disease-progression response measured one year after baseline. The dataset is a compact teaching resource, not evidence that this model is suitable for clinical decisions. The exercise is predictive modelling on this historical sample; it does not establish causal effects or deployment validity.</p>
+<p>You will run a standalone Python script with no dataset download, generate an error report, and understand what the evaluation does and does not show. Prerequisites are basic Pandas, pipelines, ridge/lasso/elastic net, and held-out metrics. No model score is supplied as a fabricated result; the script prints the values from your actual run.</p>
+<h2 id="problem">2. Define the prediction contract</h2>
+<p>The prediction target is the dataset's numerical progression response. The inputs are its ten supplied baseline variables. The dataset reference describes age, sex, body mass index, average blood pressure, and six blood-serum measurements. Use the documented feature names rather than inventing clinical interpretations for encoded quantities.</p>
+<p>The prediction-time assumption is that all ten baseline variables are available before predicting the later response. If a real application could not collect one of them, that feature would need to be removed before model development. A feature's presence in a CSV is not sufficient evidence that it is available at deployment.</p>
+<p>We choose RMSE for model selection to emphasize larger numerical mistakes and report MAE and R² as complementary summaries. This is an educational metric choice, not a claim that squared progression error represents a clinical utility function. A real application would require a decision-specific objective and broader validation.</p>
+<h2 id="data">3. Load raw features and inspect training data</h2>
+<p>Call <code>load_diabetes(as_frame=True, scaled=False)</code>. The default loader provides a pre-scaled version; using raw features allows our pipeline to learn scaling strictly from each training fold. Even unsupervised scale estimates should respect the evaluation boundary.</p>
+<p>Reserve 20% of rows using a fixed random seed. On this dataset that produces 89 test rows and 353 training rows. This random split assumes the observations can be treated as exchangeable for this demonstration. If deployment involved future cohorts, institutions, or repeated patients, the split would need to reflect those groups or times, but this compact dataset does not supply all that context.</p>
+<p>Inspect dimensions, missing values, feature distributions, and target summary on the training partition. The example uses a median imputer in the pipeline as a general defensive preprocessing step. It does not claim the dataset contains missing values. The imputer's statistics, like the scaler's, are learned separately inside each training fold.</p>
+<h2 id="mathematics">4. Relate the pipeline to the objective</h2>
+<p>For each feature j, median imputation fills missing values using a training-derived statistic. Standardization then maps the imputed feature to zᵢⱼ = (xᵢⱼ − μⱼ)/sⱼ, where μⱼ and sⱼ are the training feature mean and standard deviation. The estimator fits an intercept and slopes on these transformed columns.</p>
+<div class="math">\hat y_i=\beta_0+\sum_{j=1}^{p}\beta_jz_{ij},\qquad z_{ij}=\frac{x_{ij}-\mu_j}{s_j}</div>
+<p>The sample count is n and p = 10. For a constant feature, StandardScaler handles the zero-variance case without dividing by zero; its transformed column carries no variation. The test rows use the same fitted preprocessing statistics. Fitting a fresh scaler on the test set would change the prediction function.</p>
+<p>Model selection compares OLS, ridge, lasso, and elastic net with their documented library conventions. For a candidate configuration c and K validation folds, we minimize the mean fold MSE:</p>
+<div class="math">\operatorname{CV}(c)=\frac1K\sum_{k=1}^{K}\frac1{|V_k|}\sum_{i\in V_k}(y_i-\hat f_{c,-k}(\mathbf x_i))^2</div>
+<p>V<sub>k</sub> denotes validation fold k. The fitted function f-hat<sub>c,−k</sub> includes imputation, scaling, and the estimator learned without that fold. This is why wrapping preprocessing around an estimator with internal cross-validation can require care: preprocessing fitted before the estimator's internal folds has already seen their validation rows. Here GridSearchCV wraps the entire pipeline.</p>
+<h2 id="worked-example">5. Trace one hypothetical prediction</h2>
+<p>Before running the real dataset, use a two-feature arithmetic example to understand the pipeline. Suppose fitted training means are [10,100], standard deviations [2,20], intercept 50, and standardized slopes [4,−3]. A new raw row [12,80] becomes z = [1,−1]. Its prediction is 50 + 4·1 − 3·(−1) = 57.</p>
+<p>If the observed target is 60, residual = 3, absolute error = 3, and squared error = 9. For three illustrative test targets [60,40,50] and predictions [57,42,49], residuals are [3,−2,1]. MAE = 2, MSE = 14/3, and RMSE ≈ 2.160. The target mean is 50, SST = 200, and R² = 1 − 14/200 = 0.93.</p>
+<p>These numbers are a transparent hypothetical calculation, not outputs from the diabetes experiment. The real coefficients and scores depend on the actual training rows, parameter search, and library execution. Keeping worked arithmetic distinct from measured results prevents a tutorial example from being mistaken for a benchmark.</p>
+<h2 id="python">6. Execute the whole project</h2>
+<p>Install the linked requirements in an isolated Python environment, then run the downloaded script. It uses a fixed split and fixed cross-validation shuffle seed. The search uses training data only, then refits the selected pipeline on all training rows. The baseline and selected model are evaluated on the same test rows.</p>
+<p><a class="download-code" href="/examples/end-to-end-regression-project.py" download>Download the complete Python script ↓</a> · <a href="/examples/requirements.txt">Python requirements</a></p><div class="code-wrap"><button class="copy-code" type="button">Copy code</button><pre><code class="language-python">&quot;&quot;&quot;Run with Python 3 after installing examples/requirements.txt.&quot;&quot;&quot;
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
+from sklearn.dummy import DummyRegressor
+from sklearn.model_selection import GridSearchCV, KFold
+import pandas as pd
+import sklearn
+from sklearn.datasets import load_diabetes
+from sklearn.impute import SimpleImputer
+
+print(&quot;Versions:&quot;, &quot;numpy&quot;, np.__version__, &quot;pandas&quot;, pd.__version__,
+      &quot;scikit-learn&quot;, sklearn.__version__)
+data = load_diabetes(as_frame=True, scaled=False)
+X, y = data.data, data.target
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+print(&quot;Training/test shapes:&quot;, X_train.shape, X_test.shape)
+print(&quot;Training missing values:&quot;, X_train.isna().sum().to_dict())
+print(&quot;Training target summary:&quot;, y_train.describe().to_dict())
+pipe = Pipeline([
+    (&quot;impute&quot;, SimpleImputer(strategy=&quot;median&quot;)),
+    (&quot;scale&quot;, StandardScaler()),
+    (&quot;model&quot;, Ridge()),
+])
+
+# These are library alpha values, not identical normalized penalties.
+param_grid = [
+    {&quot;model&quot;: [LinearRegression()]},
+    {&quot;model&quot;: [Ridge()], &quot;model__alpha&quot;: [0.1, 1, 10, 100, 1000]},
+    {&quot;model&quot;: [Lasso(max_iter=50000)], &quot;model__alpha&quot;: [0.01, 0.1, 1, 10]},
+    {&quot;model&quot;: [ElasticNet(max_iter=50000)],
+     &quot;model__alpha&quot;: [0.01, 0.1, 1, 10], &quot;model__l1_ratio&quot;: [0.2, 0.5, 0.8]},
+]
+search = GridSearchCV(pipe, param_grid, scoring=&quot;neg_mean_squared_error&quot;,
+                      cv=KFold(5, shuffle=True, random_state=42), n_jobs=1)
+search.fit(X_train, y_train)
+pred = search.predict(X_test)
+print(&quot;Selected configuration:&quot;, search.best_params_)
+print(&quot;CV RMSE (sqrt of mean fold MSE):&quot;, np.sqrt(-search.best_score_))
+
+baseline = DummyRegressor(strategy=&quot;mean&quot;).fit(X_train, y_train)
+rows = []
+for name, predictions in [(&quot;Training-mean baseline&quot;, baseline.predict(X_test)),
+                          (&quot;Selected pipeline&quot;, pred)]:
+    rows.append({&quot;model&quot;: name, &quot;MAE&quot;: mean_absolute_error(y_test, predictions),
+                 &quot;RMSE&quot;: np.sqrt(mean_squared_error(y_test, predictions)),
+                 &quot;R2&quot;: r2_score(y_test, predictions)})
+print(pd.DataFrame(rows).to_string(index=False))
+coefficients = search.best_estimator_.named_steps[&quot;model&quot;].coef_
+print(pd.Series(coefficients, index=X.columns, name=&quot;Standardized coefficient&quot;))
+assert np.isfinite(pred).all()
+assert len(pred) == len(y_test)
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+axes[0].scatter(y_test, pred, alpha=0.7)
+limits = [min(y_test.min(), pred.min()), max(y_test.max(), pred.max())]
+axes[0].plot(limits, limits, &quot;k--&quot;)
+axes[0].set(xlabel=&quot;Actual progression response&quot;, ylabel=&quot;Predicted response&quot;)
+axes[1].scatter(pred, y_test - pred, alpha=0.7)
+axes[1].axhline(0, color=&quot;black&quot;, linestyle=&quot;--&quot;)
+axes[1].set(xlabel=&quot;Predicted response&quot;, ylabel=&quot;Observed minus predicted&quot;)
+fig.tight_layout()
+plt.show()
+</code></pre></div>
+<p>The script prints the selected configuration, cross-validation RMSE derived from mean validation MSE, and a test table with MAE, RMSE, and R². The coefficient table uses standardized input units. It should not be read as a ranked list of causal effects or compared directly to coefficients from raw, unscaled inputs.</p>
+<h2 id="diagnostics">7. Interpret the results you actually obtain</h2>
+<p>Begin with the training-mean baseline. If the selected model offers little improvement, investigate whether the features contain adequate signal, whether the model is overly constrained, and whether the chosen split is unusually difficult. Do not respond by repeatedly changing the seed until the test score looks better.</p>
+<p>In the actual-versus-predicted plot, the dashed diagonal represents perfect predictions. Systematic compression toward the centre can indicate shrinkage or limited model capacity. In the residual plot, examine whether errors change sign or spread across fitted values. Neither graph establishes clinical reliability or causal validity.</p>
+<p>Inspect large errors in the context of data quality and target definition, but avoid removing them merely to improve the score. If you discover a genuine data issue, document the correction and reconsider whether the test set has now influenced development. A fresh evaluation boundary may be necessary.</p>
+<figure class="lab" data-chart="residual"><div class="lab-heading"><span class="eyebrow">INTERACTIVE LAB</span><span>Change one variable. Observe the effect.</span></div><div class="lab-controls"></div><svg viewBox="0 0 700 340" role="img" aria-label="Interactive regression diagram"></svg><p class="chart-summary" aria-live="polite"></p><figcaption>Figure 1. A deterministic educational experiment; values are calculated from the displayed model. See the controls and summary for a text interpretation.</figcaption><noscript>Enable JavaScript to explore this diagram. The worked example below provides the numerical explanation.</noscript></figure>
+<p>Figure 1 is a synthetic diagnostic illustration, separate from the real-data plots generated by the Python script. It shows what an omitted curved relationship can look like; it does not imply that this particular pattern was observed in the diabetes results.</p>
+<h2 id="engineering">8. Make the experiment reproducible</h2>
+<p>Record the dataset loader and its options, package versions, random seeds, feature names, split sizes, candidate grids, scoring rule, and selected parameters. The requirements file provides an executable environment specification. For an audit trail, also save the actual script output and the package version report from the run.</p>
+<p>If you later serialize the fitted model, save the complete pipeline rather than only the final estimator. The imputer and scaler are part of the prediction function. Add input-schema checks so missing columns, reordered columns, or unexpected units fail clearly. Only load serialized artifacts from sources you trust; the usual Python model serialization formats can execute code when loaded.</p>
+<p>Operational monitoring should compare input ranges and missingness with the training setting, then monitor observed errors when labels arrive. Drift in inputs is not identical to performance degradation, and delayed labels limit what can be concluded immediately. Define who investigates a change and what evidence triggers retraining.</p>
+<h2 id="limitations">9. What this project cannot establish</h2>
+<p>A small historical teaching dataset does not represent all future populations or workflows. A single split has sampling variability. Random-row validation does not simulate temporal deployment, and the available columns cannot establish that every clinically important factor is represented. Prediction accuracy on these rows cannot justify medical use.</p>
+<p>The search considers a finite family of linear estimators. A nonlinear model might improve a chosen score, but adding it expands the selection procedure and should be validated with the same discipline. More model flexibility is not a substitute for understanding the target and deployment conditions.</p>
+<p>The example does not estimate causal treatment effects, prediction intervals, or subgroup reliability with adequate sample sizes. Those are separate tasks requiring additional assumptions, data, and evaluation. Treat the project as a reusable experimental pattern rather than a complete production system.</p>
+
+<h3>Translate standardized coefficients back to raw units</h3>
+<p>The pipeline's coefficient table refers to standardized features. For a nonconstant feature j with training scale sⱼ, the raw-unit slope is βⱼ/sⱼ. The raw intercept is β₀ − Σⱼβⱼμⱼ/sⱼ. This algebra can help explain a fitted model, but the full pipeline should still be used for actual predictions so missing-value handling and column ordering stay consistent.</p>
+<p>In the hypothetical example with means [10,100], scales [2,20], and slopes [4,−3], raw slopes are [2,−0.15]. The raw intercept is 50 − 4·10/2 − (−3)·100/20 = 45. At raw input [12,80], the prediction is 45 + 2·12 − 0.15·80 = 57, matching the transformed calculation. This consistency check is useful when preparing an interpretation report.</p>
+<h3>Plan extensions without erasing the evaluation boundary</h3>
+<p>If residuals suggest nonlinear structure, define the proposed change and its selection procedure before returning to the test results. For example, a polynomial feature expansion belongs inside the pipeline, and its degree belongs inside the training-only search. Repeatedly changing the search after inspecting the final test plot turns that plot into a development signal.</p>
+<p>To estimate uncertainty about the selected procedure, an outer resampling loop can rerun the full search. To estimate variability of a fixed model's metric on the current test population, paired resampling of test observations is a different, narrower calculation. Neither approach automatically captures distribution shift to a new cohort or institution.</p>
+<h3>Write a useful model handoff</h3>
+<p>A concise handoff should identify the target definition, prediction timestamp, required columns and units, training sample, preprocessing steps, selected configuration, measured evaluation results, and known limitations. Include the exact command needed to rerun the script and the software versions it prints. Someone reading the report should be able to distinguish observed evidence from proposed next steps.</p>
+<p>For this teaching project, explicitly state that the data lacks the operational context required for a clinical deployment claim. That limitation is not repaired by a better test RMSE. A stronger follow-up project would obtain an appropriate dataset and prediction contract, validate on a population matching the intended use, and evaluate uncertainty and subgroup behaviour with sufficient data.</p>
+
+<h2 id="interview">10. Interview questions</h2>
+<details><summary>1. Why request scaled=False?</summary><p>It lets the pipeline learn feature scaling from training data and from each training fold, instead of using a dataset representation scaled before our split.</p></details>
+<details><summary>2. Why put the imputer and scaler inside GridSearchCV's pipeline?</summary><p>Each validation fold must be transformed using statistics learned without its rows. Searching only the final estimator after globally fitting preprocessing violates that boundary.</p></details>
+<details><summary>3. Why retain a test set after cross-validation?</summary><p>Cross-validation selects the configuration. The reserved test set estimates performance after that selection, provided it has not influenced further choices.</p></details>
+<details><summary>4. What does the dummy baseline predict?</summary><p>The training target mean for every test row. Its score measures what can be achieved without using features.</p></details>
+<details><summary>5. Are standardized coefficients causal effects?</summary><p>No. They describe the fitted conditional prediction function per standardized input unit, subject to correlations and model assumptions.</p></details>
+<details><summary>6. Can you choose a new model after seeing the test table?</summary><p>You can continue development, but that test set has then become part of selection. You need a new evaluation plan for an unbiased final assessment.</p></details>
+<details><summary>7. Why report several metrics?</summary><p>MAE and RMSE reveal different sensitivity to error magnitude, while R² compares squared error with target variation. None replaces residual inspection.</p></details>
+<details><summary>8. What must be saved for inference?</summary><p>The full fitted preprocessing-and-model pipeline, the feature schema, and the environment and provenance needed to reproduce its behaviour.</p></details>
+<h2 id="practice">11. Extensions and takeaways</h2>
+<ul><li>Add a nonlinear candidate inside the same model-selection framework, preserving the test boundary.</li><li>Use nested cross-validation to evaluate the entire selection procedure across outer folds. Report its additional computational cost.</li><li>Write an input-schema validator and test missing or reordered feature columns before building a prediction interface.</li><li>Create an experiment report containing the actual run output, residual plots, limitations, and a justified next experiment.</li></ul>
+<p>A complete regression project is an auditable sequence of decisions. The baseline, information boundary, preprocessing, selection procedure, and error interpretation matter as much as the estimator's name.</p>
+<div class="sources"><h3>Dataset and implementation references</h3><p><a href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_diabetes.html">Diabetes dataset description and loader options</a> · <a href="https://scikit-learn.org/stable/modules/compose.html#pipeline">Pipeline documentation</a> · <a href="https://scikit-learn.org/stable/modules/grid_search.html">Model selection and grid search</a></p></div>
+<section class="related"><h2 id="related">Continue learning</h2><ul><li><a href="/articles/introduction-to-regression/">Introduction to Regression Analysis</a></li><li><a href="/articles/regression-evaluation-metrics/">Regression Evaluation Metrics — MAE, MSE, RMSE, and R²</a></li><li><a href="/articles/ridge-vs-lasso-vs-elastic-net/">Ridge vs Lasso vs Elastic Net — Detailed Comparison</a></li></ul></section><nav class="series-nav" aria-label="Series navigation"><a rel="prev" href="/articles/ridge-vs-lasso-vs-elastic-net/">← Previous<br>Ridge vs Lasso vs Elastic Net — Detailed Comparison</a><a href="/articles.html">Explore the knowledge hub →</a></nav></article></div></main><footer class="wrap site-footer"><a class="brand" href="/index.html">jyoti<span class="brand-dot">.</span></a><p>© <span id="year">2026</span> Jyoti Ranjan Jally</p><span>DATA. MODELS. MEANINGFUL SOFTWARE.</span><a href="#top">Back to top <svg class="icon icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V4m-6 6 6-6 6 6"/></svg></a></footer></body></html>

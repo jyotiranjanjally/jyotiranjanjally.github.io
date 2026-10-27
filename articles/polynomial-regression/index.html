@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Polynomial Regression — Nonlinear Relationships | Jyoti Ranjan Jally</title><meta name="description" content="Model curvature with a linear estimator. Explore polynomial degree, conditioning, and the cost of unnecessary flexibility.">
+<link rel="canonical" href="https://jyotiranjanjally.github.io/articles/polynomial-regression/"><meta property="og:title" content="Polynomial Regression — Nonlinear Relationships">
+<meta property="og:description" content="Model curvature with a linear estimator. Explore polynomial degree, conditioning, and the cost of unnecessary flexibility."><meta property="og:url" content="https://jyotiranjanjally.github.io/articles/polynomial-regression/">
+<meta property="og:type" content="article"><meta name="theme-color" content="#f5f4f1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/assets/hub/hub.css">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('portfolio-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){document.documentElement.dataset.theme='light'}</script>
+<link rel="stylesheet" href="/assets/hub/vendor/katex/katex.min.css">
+<script defer src="/assets/hub/vendor/katex/katex.min.js"></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Polynomial Regression \u2014 Nonlinear Relationships", "description": "Model curvature with a linear estimator. Explore polynomial degree, conditioning, and the cost of unnecessary flexibility.", "datePublished": "2026-10-27", "author": {"@type": "Person", "name": "Jyoti Ranjan Jally", "url": "https://jyotiranjanjally.github.io"}, "mainEntityOfPage": "https://jyotiranjanjally.github.io/articles/polynomial-regression/", "articleSection": ["Machine Learning", "Supervised Learning", "Regression"], "keywords": ["polynomials", "bias variance", "cross-validation"], "proficiencyLevel": "Intermediate", "inLanguage": "en"}</script><script defer src="/app.js"></script><script defer src="/assets/hub/hub.js"></script>
+<script defer src="/assets/hub/charts.js"></script></head><body id="top" class="knowledge-hub">
+<a class="skip" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="/index.html" aria-label="Jyoti, home">jyoti<span class="brand-dot">.</span><span class="brand-caption">MACHINE LEARNING ENGINEER</span></a><button class="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch theme"><svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></svg><svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button><button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav"><span></span><span></span></button><nav id="main-nav" aria-label="Main navigation"><a href="/index.html#work">Projects</a><a href="/index.html#approach">Expertise</a><a href="/articles.html" aria-current="page">Articles</a><a class="nav-contact resume-link" href="/assets/Jyoti-Ranjan-Jally-Resume.pdf" download="Jyoti-Ranjan-Jally-Resume.pdf">Resume <span aria-hidden="true"><svg class="icon icon-arrow-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16m-6-6 6 6 6-6"/></svg></span></a></nav></header>
+<div class="reading-progress" aria-hidden="true"></div><main id="main" class="wrap"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/articles.html">Knowledge hub</a> / <a href="/articles.html?category=Machine+Learning">Machine Learning</a> / <a href="/articles.html?category=Machine+Learning&amp;topic=Supervised+Learning">Supervised Learning</a> / <a href="/articles.html?category=Machine+Learning&amp;topic=Regression">Regression</a></nav>
+<header class="reading-header"><p class="eyebrow">THE REGRESSION SERIES / 04 OF 12</p><h1>Polynomial Regression — Nonlinear Relationships</h1><p class="standfirst">Model curvature with a linear estimator. Explore polynomial degree, conditioning, and the cost of unnecessary flexibility.</p><div class="reading-meta"><span class="difficulty">Intermediate</span><span>11 min read</span><time datetime="2026-10-27">27 October 2026</time></div><nav class="article-tags" aria-label="Article tags"><a href="/articles.html?q=polynomials">polynomials</a><a href="/articles.html?q=bias+variance">bias variance</a><a href="/articles.html?q=cross-validation">cross-validation</a></nav></header>
+<div class="reading-layout"><aside class="toc"><nav aria-label="Table of contents"><p class="eyebrow">ON THIS PAGE</p><ol><li><a href="#introduction">Curved relationships, linear parameters</a></li><li><a href="#intuition">Give the model curved building blocks</a></li><li><a href="#derivation">Fit the expanded design matrix</a></li><li><a href="#worked-example">A quadratic fit by hand</a></li><li><a href="#visualization">Degree, noise, and fit</a></li><li><a href="#generalization">Underfitting, overfitting, and extrapolation</a></li><li><a href="#python">A leakage-safe polynomial pipeline</a></li><li><a href="#tradeoffs">When the method helps</a></li><li><a href="#interview">Interview questions</a></li><li><a href="#practice">Practice and takeaways</a></li></ol></nav><a href="/articles.html?category=Machine+Learning&amp;topic=Regression">Explore this topic ↗</a></aside>
+<article class="tutorial"><h2 id="introduction">1. Curved relationships, linear parameters</h2>
+<p>A straight line may miss the relationship between speed and energy consumption or temperature and equipment performance. Polynomial regression adds powers of a feature so a linear estimator can represent curvature. The result is nonlinear in the original input, but still linear in the coefficients being estimated.</p>
+<p>This distinction matters: you can use ordinary least squares, ridge, or another linear estimator after creating the polynomial features. You do not need a general nonlinear optimizer merely because the prediction curve bends. This tutorial derives the feature expansion, explains the risk of high degree, and implements a pipeline that keeps preprocessing inside each validation fold.</p>
+<p>Prerequisites are simple regression and the design-matrix interpretation. You will choose a degree using validation, compare underfitting and overfitting, and inspect numerical conditioning rather than judging a model only by how smoothly it passes through the training points.</p>
+<h2 id="intuition">2. Give the model curved building blocks</h2>
+<p>A linear model with only x can tilt and shift a line. Adding x² gives it a symmetric curved component. Adding x³ allows an asymmetric change in curvature. Each new column is a fixed function of the input; training still chooses only how much of each column to use.</p>
+<div class="math">\hat y=\beta_0+\beta_1x+\beta_2x^2+\cdots+\beta_dx^d=\boldsymbol\phi(x)^T\boldsymbol\beta</div>
+<p>The nonnegative integer d is the maximum degree. The vector φ(x) = [1, x, x², …, xᵈ] is the polynomial feature map, and β contains d + 1 coefficients. Increasing d expands the set of functions available to the model. It also creates more opportunities to fit noise.</p>
+<p>“Linear in parameters” means that doubling every coefficient doubles the prediction, and adding two coefficient vectors adds their predictions. A term such as exp(βx) is nonlinear in β; x² multiplied by β is not. This algebraic distinction determines which optimization tools apply.</p>
+<h2 id="derivation">3. Fit the expanded design matrix</h2>
+<p>For n observations, stack the feature-map vectors into a matrix Φ. Its row i contains the powers of xᵢ. The least-squares objective and its derivative have the same form as multiple linear regression.</p>
+<div class="math">J(\boldsymbol\beta)=\frac1n\|\mathbf y-\Phi\boldsymbol\beta\|_2^2,\qquad\nabla J=\frac2n\Phi^T(\Phi\boldsymbol\beta-\mathbf y)</div>
+<div class="math">\Phi^T\Phi\hat{\boldsymbol\beta}=\Phi^T\mathbf y</div>
+<p>Here Φ has n rows and d + 1 columns. A unique ordinary least-squares coefficient vector requires full column rank. If d + 1 exceeds the number of distinct observed feature values, uniqueness is impossible. Even when rank is technically full, powers of similar or very large values can be numerically ill-conditioned.</p>
+<p>For example, if x is around 10,000, x⁶ is around 10²⁴. Columns of such different magnitudes and strong correlations can amplify floating-point error. Centering and scaling the input before expanding its powers helps; scaling expanded columns is also relevant when a regularization penalty should compare coefficients on comparable feature scales. Orthogonal polynomial bases and splines are alternatives when raw powers become unwieldy.</p>
+<h2 id="worked-example">4. A quadratic fit by hand</h2>
+<p>Take x = [−1, 0, 1] and y = [2, 1, 2]. With degree two, the three equations are β₀ − β₁ + β₂ = 2, β₀ = 1, and β₀ + β₁ + β₂ = 2. Substituting β₀ = 1 gives −β₁ + β₂ = 1 and β₁ + β₂ = 1. Adding them yields β₂ = 1, then β₁ = 0.</p>
+<p>The fitted model is y-hat = 1 + x². Training predictions are [2,1,2], residuals are all zero, and training MSE is zero. At x = 0.5, it predicts 1.25. If the observed target there is 1.5, residual = 0.25 and squared error = 0.0625.</p>
+<p>A degree-one model on the same symmetric data has slope zero and intercept 5/3. Its residuals are [1/3, −2/3, 1/3], so squared error sums to 2/3 and MSE = 2/9. The quadratic fits the visible curvature better. With only three points, however, exact interpolation does not establish that the quadratic is the correct future relationship.</p>
+<h2 id="visualization">5. Degree, noise, and fit</h2>
+<figure class="lab" data-chart="polynomial"><div class="lab-heading"><span class="eyebrow">INTERACTIVE LAB</span><span>Change one variable. Observe the effect.</span></div><div class="lab-controls"></div><svg viewBox="0 0 700 340" role="img" aria-label="Interactive regression diagram"></svg><p class="chart-summary" aria-live="polite"></p><figcaption>Figure 1. A deterministic educational experiment; values are calculated from the displayed model. See the controls and summary for a text interpretation.</figcaption><noscript>Enable JavaScript to explore this diagram. The worked example below provides the numerical explanation.</noscript></figure>
+<p>The lab fits coefficients to the displayed observations for each degree. Increasing degree cannot worsen the mathematical minimum training squared error when the lower-degree function remains in the larger hypothesis class. Finite precision can complicate that statement in software. More importantly, the graph's training error says nothing by itself about performance on new observations.</p>
+<h2 id="generalization">6. Underfitting, overfitting, and extrapolation</h2>
+<p>A degree-one model can underfit a curved conditional mean: systematic residual structure remains even with abundant data. A very high-degree polynomial can overfit finite-sample noise: small changes to observations produce large changes to the curve. The usual bias–variance picture describes these tendencies across repeated training samples, not a universal monotonic law for every dataset.</p>
+<p>High-degree polynomials are particularly risky outside the training interval. The leading power eventually dominates, so an apparently modest curve over the data range can explode just beyond it. Standardizing inputs does not remove that structural extrapolation risk. It changes numerical conditioning, not the fact that powers grow.</p>
+<p>Degree should be chosen using a validation strategy that resembles deployment. Random K-fold validation is appropriate only when observations are reasonably exchangeable. For time-dependent measurements, a chronological split is often more defensible. Report the final chosen degree and evaluate once on a test set that played no role in degree selection.</p>
+<h2 id="python">7. A leakage-safe polynomial pipeline</h2>
+<p>The complete script compares degrees one through six. The feature scaler, polynomial expansion, second scaler, and ridge estimator form one pipeline. Grid search refits the learned transformations separately within every training fold. The example uses a small fixed ridge penalty for numerical stability; this makes it regularized polynomial regression rather than pure polynomial OLS.</p>
+<p><a class="download-code" href="/examples/polynomial-regression.py" download>Download the complete Python script ↓</a> · <a href="/examples/requirements.txt">Python requirements</a></p><div class="code-wrap"><button class="copy-code" type="button">Copy code</button><pre><code class="language-python">&quot;&quot;&quot;Run with Python 3 after installing examples/requirements.txt.&quot;&quot;&quot;
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import GridSearchCV, KFold
+
+rng = np.random.default_rng(42)
+X = rng.uniform(-2, 2, size=(200, 1))
+y = 1 + 0.5 * X[:, 0] + 2 * X[:, 0] ** 2 + rng.normal(0, 0.7, 200)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42
+)
+pipe = Pipeline([
+    (&quot;input_scale&quot;, StandardScaler()),
+    (&quot;poly&quot;, PolynomialFeatures(include_bias=False)),
+    (&quot;feature_scale&quot;, StandardScaler()),
+    (&quot;model&quot;, Ridge(alpha=0.01)),
+])
+search = GridSearchCV(pipe, {&quot;poly__degree&quot;: list(range(1, 7))},
+                      scoring=&quot;neg_mean_squared_error&quot;,
+                      cv=KFold(5, shuffle=True, random_state=42))
+search.fit(X_train, y_train)
+pred = search.predict(X_test)
+print(&quot;Selected degree:&quot;, search.best_params_[&quot;poly__degree&quot;])
+
+print(&quot;Test MAE:&quot;, mean_absolute_error(y_test, pred))
+print(&quot;Test RMSE:&quot;, np.sqrt(mean_squared_error(y_test, pred)))
+print(&quot;Test R2:&quot;, r2_score(y_test, pred))
+
+grid = np.linspace(-2, 2, 300).reshape(-1, 1)
+plt.scatter(X_test[:, 0], y_test, label=&quot;Test observations&quot;)
+plt.plot(grid[:, 0], search.predict(grid), color=&quot;tab:orange&quot;, label=&quot;Selected polynomial&quot;)
+plt.xlabel(&quot;x&quot;)
+plt.ylabel(&quot;y&quot;)
+plt.legend()
+plt.tight_layout()
+plt.show()
+</code></pre></div>
+<p>There is no separate constant column from <code>PolynomialFeatures</code> because <code>include_bias=False</code>. The final estimator supplies an unpenalized intercept. If you enable both, you create a redundant constant feature that is usually unnecessary. The plot overlays selected-model predictions over a grid inside the observed feature interval.</p>
+<h2 id="tradeoffs">8. When the method helps</h2>
+<p>Polynomial features provide an inexpensive way to add modest curvature while reusing linear-model tooling. They can be useful for calibration over a bounded operating range or as a transparent baseline. A quadratic coefficient can sometimes express a known physical shape, although empirical fitting alone does not establish a physical law.</p>
+<p>With p original features and all terms through total degree d, the number of terms including the constant is the binomial coefficient (p + d choose d). Interactions rapidly increase memory and fitting cost. A degree that is cheap for one input may be impractical for dozens. Avoid interpreting an isolated coefficient without considering the other powers and interactions.</p>
+<p>Splines give more local control; tree methods can capture thresholds and interactions; a domain model may impose meaningful shape constraints. These alternatives should be evaluated against the same baseline and split, rather than selected because a more complicated curve looks impressive.</p>
+
+<h3>Centering changes coefficients, not the underlying polynomial space</h3>
+<p>Let u = (x − m)/s, where m is a training mean and s is a positive training scale. A quadratic fitted in u has prediction a₀ + a₁u + a₂u². Expanding the powers expresses the same function in raw x coordinates. The raw quadratic coefficient is a₂/s², the raw linear coefficient is a₁/s − 2a₂m/s², and the raw intercept is a₀ − a₁m/s + a₂m²/s².</p>
+<p>This explains why coefficients from standardized and raw-power fits should not be compared entry by entry. Even the linear coefficient changes when a quadratic term is present. If the transformation is invertible and no penalty is imposed, both parameterizations span the same quadratic functions. Regularization changes that conclusion about the preferred fit because the coefficient norm is measured in a different coordinate system.</p>
+<p>For example, with m = 2, s = 2, and a = [1,0,4], the standardized model is 1 + 4((x − 2)/2)² = 1 + (x − 2)² = 5 − 4x + x². The raw intercept is 5, the raw slope is −4, and the quadratic coefficient is 1. At x = 3 both parameterizations predict 2. The apparent coefficient differences are entirely due to representation.</p>
+<h3>Differentiate the fitted curve to interpret local behaviour</h3>
+<div class="math">\frac{d\hat y}{dx}=\beta_1+2\beta_2x+\cdots+d\beta_dx^{d-1}</div>
+<p>The derivative is a local rate of change in target units per input unit. In the worked quadratic 1 + x², it is 2x: negative to the left of zero, zero at the minimum, and positive to the right. A single coefficient cannot summarize that changing slope. When an application requires monotonicity, an unconstrained polynomial may violate it even while producing a good average score.</p>
+<p>Derivative estimates are often more sensitive to noise than function predictions, especially for high-degree models. A visually smooth fitted curve does not guarantee a reliable estimated turning point. If the turning point drives an operating decision, validate that derived quantity and consider a model with a defensible shape constraint.</p>
+<h3>Validate complexity as a procedure</h3>
+<p>Plotting many degrees against the test targets and selecting the most convincing curve is test-set tuning even if no explicit score is computed. Choose degree using training-only validation, then use the test plot as an audit of the fixed choice. If the audit reveals a reason to redesign the model, acknowledge that the next iteration needs a fresh final evaluation boundary.</p>
+
+<h2 id="interview">9. Interview questions</h2>
+<details><summary>1. Why is polynomial regression still a linear model?</summary><p>The prediction is a linear combination of fixed transformed features. The coefficients appear to the first power and are not multiplied together.</p></details>
+<details><summary>2. What does degree control?</summary><p>The maximum power, and thus the size and flexibility of the basis. It is a hyperparameter, not a coefficient learned by ordinary least squares.</p></details>
+<details><summary>3. Does higher degree always lower test error?</summary><p>No. It enlarges the training function class but can increase estimation variance, numerical instability, and extrapolation error.</p></details>
+<details><summary>4. Why scale before expansion?</summary><p>Keeping input magnitudes moderate reduces extreme powers and can improve conditioning. Scaling expanded features additionally defines how regularization compares their coefficients.</p></details>
+<details><summary>5. What is the multivariate feature-count problem?</summary><p>All polynomial interactions through degree d create a combinatorial number of columns, increasing memory, computation, and the risk of fitting noise.</p></details>
+<details><summary>6. Should the bias column be penalized?</summary><p>Usually no. Use an estimator-provided intercept and omit the polynomial bias column unless you have an explicit reason for another parameterization.</p></details>
+<details><summary>7. Can a degree-two model capture interactions?</summary><p>With multiple inputs, a full polynomial expansion can include products such as x₁x₂ as well as squares. These allow the fitted effect of one input to depend on another.</p></details>
+<details><summary>8. Why might a spline be preferable?</summary><p>Local basis functions can model curvature without forcing one global polynomial to determine behaviour across the entire domain.</p></details>
+<h2 id="practice">10. Practice and takeaways</h2>
+<ul><li>Run the example with several random seeds. Compare the selected degree and final error without selecting a seed based on its score.</li><li>Extend the plotted grid outside the training interval. Explain why uncertainty about extrapolation is not captured by training MSE.</li><li>Compare polynomial ridge with an unregularized fit using the same degree and split.</li><li>Build a bounded-range sensor-calibration mini-project and record the operating range in the model's interface.</li></ul>
+<p>Feature expansion changes the functions a model can express. Validation chooses whether that flexibility is useful. Stable numerics and sensible domain limits remain essential even when the optimizer is still linear least squares.</p>
+<div class="sources"><h3>Further reading</h3><p><a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PolynomialFeatures.html">PolynomialFeatures reference</a> · <a href="https://scikit-learn.org/stable/modules/compose.html#pipeline">Pipelines and composite estimators</a></p></div>
+<section class="related"><h2 id="related">Continue learning</h2><ul><li><a href="/articles/multiple-linear-regression/">Multiple Linear Regression — Matrix Mathematics and Implementation</a></li><li><a href="/articles/ridge-regression/">Ridge Regression — L2 Regularization</a></li><li><a href="/articles/regression-evaluation-metrics/">Regression Evaluation Metrics — MAE, MSE, RMSE, and R²</a></li></ul></section><nav class="series-nav" aria-label="Series navigation"><a rel="prev" href="/articles/multiple-linear-regression/">← Previous<br>Multiple Linear Regression — Matrix Mathematics and Implementation</a><a rel="next" href="/articles/ridge-regression/">Next →<br>Ridge Regression — L2 Regularization</a></nav></article></div></main><footer class="wrap site-footer"><a class="brand" href="/index.html">jyoti<span class="brand-dot">.</span></a><p>© <span id="year">2026</span> Jyoti Ranjan Jally</p><span>DATA. MODELS. MEANINGFUL SOFTWARE.</span><a href="#top">Back to top <svg class="icon icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V4m-6 6 6-6 6 6"/></svg></a></footer></body></html>

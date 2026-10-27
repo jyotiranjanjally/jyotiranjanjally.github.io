@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gradient Descent for Linear Regression — Mathematical Derivation and Python | Jyoti Ranjan Jally</title><meta name="description" content="Derive the gradient and its convergence condition, implement batch updates, and see what learning rate changes.">
+<link rel="canonical" href="https://jyotiranjanjally.github.io/articles/gradient-descent-linear-regression/"><meta property="og:title" content="Gradient Descent for Linear Regression — Mathematical Derivation and Python">
+<meta property="og:description" content="Derive the gradient and its convergence condition, implement batch updates, and see what learning rate changes."><meta property="og:url" content="https://jyotiranjanjally.github.io/articles/gradient-descent-linear-regression/">
+<meta property="og:type" content="article"><meta name="theme-color" content="#f5f4f1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/assets/hub/hub.css">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('portfolio-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){document.documentElement.dataset.theme='light'}</script>
+<link rel="stylesheet" href="/assets/hub/vendor/katex/katex.min.css">
+<script defer src="/assets/hub/vendor/katex/katex.min.js"></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Gradient Descent for Linear Regression \u2014 Mathematical Derivation and Python", "description": "Derive the gradient and its convergence condition, implement batch updates, and see what learning rate changes.", "datePublished": "2026-10-27", "author": {"@type": "Person", "name": "Jyoti Ranjan Jally", "url": "https://jyotiranjanjally.github.io"}, "mainEntityOfPage": "https://jyotiranjanjally.github.io/articles/gradient-descent-linear-regression/", "articleSection": ["Machine Learning", "Supervised Learning", "Regression"], "keywords": ["optimization", "gradient descent", "learning rate"], "proficiencyLevel": "Intermediate", "inLanguage": "en"}</script><script defer src="/app.js"></script><script defer src="/assets/hub/hub.js"></script>
+<script defer src="/assets/hub/charts.js"></script></head><body id="top" class="knowledge-hub">
+<a class="skip" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="/index.html" aria-label="Jyoti, home">jyoti<span class="brand-dot">.</span><span class="brand-caption">MACHINE LEARNING ENGINEER</span></a><button class="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch theme"><svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></svg><svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button><button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav"><span></span><span></span></button><nav id="main-nav" aria-label="Main navigation"><a href="/index.html#work">Projects</a><a href="/index.html#approach">Expertise</a><a href="/articles.html" aria-current="page">Articles</a><a class="nav-contact resume-link" href="/assets/Jyoti-Ranjan-Jally-Resume.pdf" download="Jyoti-Ranjan-Jally-Resume.pdf">Resume <span aria-hidden="true"><svg class="icon icon-arrow-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16m-6-6 6 6 6-6"/></svg></span></a></nav></header>
+<div class="reading-progress" aria-hidden="true"></div><main id="main" class="wrap"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/articles.html">Knowledge hub</a> / <a href="/articles.html?category=Machine+Learning">Machine Learning</a> / <a href="/articles.html?category=Machine+Learning&amp;topic=Supervised+Learning">Supervised Learning</a> / <a href="/articles.html?category=Machine+Learning&amp;topic=Regression">Regression</a></nav>
+<header class="reading-header"><p class="eyebrow">THE REGRESSION SERIES / 09 OF 12</p><h1>Gradient Descent for Linear Regression — Mathematical Derivation and Python</h1><p class="standfirst">Derive the gradient and its convergence condition, implement batch updates, and see what learning rate changes.</p><div class="reading-meta"><span class="difficulty">Intermediate</span><span>11 min read</span><time datetime="2026-10-27">27 October 2026</time></div><nav class="article-tags" aria-label="Article tags"><a href="/articles.html?q=optimization">optimization</a><a href="/articles.html?q=gradient+descent">gradient descent</a><a href="/articles.html?q=learning+rate">learning rate</a></nav></header>
+<div class="reading-layout"><aside class="toc"><nav aria-label="Table of contents"><p class="eyebrow">ON THIS PAGE</p><ol><li><a href="#introduction">Learn the optimizer separately from the model</a></li><li><a href="#intuition">Follow the local slope downhill</a></li><li><a href="#derivation">Derive the gradient with the chain rule</a></li><li><a href="#convergence">Why the learning rate has a limit</a></li><li><a href="#worked-example">Calculate one update and its effect</a></li><li><a href="#visualization">See convergence and divergence</a></li><li><a href="#python">Batch gradient descent from scratch</a></li><li><a href="#variants">Batch, stochastic, and mini-batch updates</a></li><li><a href="#interview">Interview questions</a></li><li><a href="#practice">Practice and takeaways</a></li></ol></nav><a href="/articles.html?category=Machine+Learning&amp;topic=Regression">Explore this topic ↗</a></aside>
+<article class="tutorial"><h2 id="introduction">1. Learn the optimizer separately from the model</h2>
+<p>Linear regression specifies a prediction function. Ordinary least squares specifies an objective. Gradient descent specifies one way to optimize that objective. These are distinct choices: replacing a direct least-squares solve with gradient descent does not create a different statistical objective if the same loss is optimized to the same solution.</p>
+<p>Iterative methods are useful when direct factorization is expensive, when data arrives in batches, or when the same optimization ideas must extend to models without a convenient closed-form solution. For a small dense regression problem, a stable least-squares solver is usually simpler. This tutorial uses linear regression because its convex quadratic structure lets us verify every optimization step.</p>
+<p>You will derive scalar and matrix gradients, calculate an update by hand, understand a learning-rate bound, and compare a converged NumPy implementation with a direct solution. Prerequisites are basic derivatives, matrix multiplication, and the squared-error objective.</p>
+<h2 id="intuition">2. Follow the local slope downhill</h2>
+<p>A gradient points in the direction of steepest local increase under the Euclidean geometry of parameter space. To reduce a differentiable objective, move in the opposite direction. The learning rate determines how far to move. A very small step can be safe but slow; a large step can overshoot the minimum and increase the loss.</p>
+<p>Feature scaling changes the shape of the loss surface in coefficient coordinates. A long narrow valley forces a single learning rate to accommodate both steep and shallow directions. Standardization often improves conditioning, although correlations can leave difficult directions even after each column has unit variance.</p>
+<div class="math">\hat y_i=\beta_0+\sum_{j=1}^p x_{ij}\beta_j,\qquad J=\frac1{2n}\sum_i(\hat y_i-y_i)^2</div>
+<p>There are n rows and p feature coefficients. The 1/2 factor cancels the factor two from differentiating a square. It does not alter the minimizer compared with MSE, but it changes gradient magnitude and therefore the numerical meaning of a fixed learning rate.</p>
+<h2 id="derivation">3. Derive the gradient with the chain rule</h2>
+<p>For observation i, write rᵢ = y-hatᵢ − yᵢ. This is prediction minus target, the negative of the residual convention used elsewhere. The derivative of rᵢ²/2 with respect to rᵢ is rᵢ. The prediction derivative with respect to the intercept is one, and with respect to slope βⱼ is xᵢⱼ.</p>
+<div class="math">\frac{\partial J}{\partial\beta_0}=\frac1n\sum_i r_i,\qquad\frac{\partial J}{\partial\beta_j}=\frac1n\sum_i x_{ij}r_i</div>
+<p>Include the intercept as a column of ones in design matrix A, and collect all coefficients in θ. Then the gradient and update are:</p>
+<div class="math">\nabla J(\boldsymbol\theta)=\frac1nA^T(A\boldsymbol\theta-\mathbf y),\qquad\boldsymbol\theta_{t+1}=\boldsymbol\theta_t-\eta\nabla J(\boldsymbol\theta_t)</div>
+<p>The step index is t and the positive learning rate is η. Compute the full gradient from the current parameter vector, then update all coordinates together. Updating one coefficient and using its changed value while calculating the next derivative is a different procedure unless deliberately designed as coordinate descent.</p>
+<h2 id="convergence">4. Why the learning rate has a limit</h2>
+<p>The Hessian, or matrix of second derivatives, is H = AᵀA/n. It is positive semidefinite. Around a solution θ*, the parameter error evolves by multiplication with I − ηH. In each eigenvector direction with positive eigenvalue h, the error is multiplied by 1 − ηh per update.</p>
+<div class="math">\boldsymbol\theta_{t+1}-\boldsymbol\theta^*=(I-\eta H)(\boldsymbol\theta_t-\boldsymbol\theta^*),\qquad 0&lt;\eta&lt;\frac2{\lambda_{\max}(H)}</div>
+<p>The symbol λ<sub>max</sub>(H) here denotes the largest Hessian eigenvalue, not a regularization strength. The inequality keeps every positive-curvature multiplier's magnitude below one. For a full-rank quadratic, it gives convergence of fixed-step gradient descent. If H has zero eigenvalues, directions in its null space are not identified by the loss; initialization influences which coefficient solution is reached.</p>
+<p>A safe teaching choice is η = 1/λ<sub>max</sub>(H). Computing the largest eigenvalue can itself be expensive for huge systems, so production algorithms use other step-size or preconditioning strategies. The bound applies to this specific half-MSE objective; changing loss normalization changes H and the bound.</p>
+<h2 id="worked-example">5. Calculate one update and its effect</h2>
+<p>Take x = [1,2], y = [2,4], n = 2, and initialize intercept and slope to zero. Predictions are [0,0], so prediction errors r = [−2,−4]. The intercept gradient is (−2 − 4)/2 = −3; the slope gradient is (1·−2 + 2·−4)/2 = −5.</p>
+<p>With η = 0.1, the new intercept is 0.3 and the new slope is 0.5. Predictions become [0.8,1.3]. Residuals y − y-hat are [1.2,2.7], squared errors [1.44,7.29], MSE = 4.365, and half-MSE = 2.1825. The initial half-MSE was (4 + 16)/4 = 5, so this update reduced the objective.</p>
+<p>The fitted parameters are not yet the optimum [0,2]. Gradient descent needs more updates. A new x = 3 currently receives prediction 0.3 + 0.5·3 = 1.8; if its target is 6, the error is large. An intermediate optimizer state is not a finished estimator merely because its training loss decreased once.</p>
+<h2 id="visualization">6. See convergence and divergence</h2>
+<figure class="lab" data-chart="descent"><div class="lab-heading"><span class="eyebrow">INTERACTIVE LAB</span><span>Change one variable. Observe the effect.</span></div><div class="lab-controls"></div><svg viewBox="0 0 700 340" role="img" aria-label="Interactive regression diagram"></svg><p class="chart-summary" aria-live="polite"></p><figcaption>Figure 1. A deterministic educational experiment; values are calculated from the displayed model. See the controls and summary for a text interpretation.</figcaption><noscript>Enable JavaScript to explore this diagram. The worked example below provides the numerical explanation.</noscript></figure>
+<p>The lab isolates a one-parameter problem with unit curvature. Its exact stability boundary is η = 2. Below the boundary, updates contract toward the minimum; at the boundary they oscillate without reducing the error; above it they diverge. The vertical axis rescales, so read the numeric loss as well as the curve.</p>
+<h2 id="python">7. Batch gradient descent from scratch</h2>
+<p>The script standardizes features using training statistics, adds an intercept column, computes a safe step size, and checks gradient norm for convergence. It compares final predictions with a direct least-squares solution and scikit-learn. The plot shows the objective during optimization, rather than presenting an invented benchmark.</p>
+<p><a class="download-code" href="/examples/gradient-descent-linear-regression.py" download>Download the complete Python script ↓</a> · <a href="/examples/requirements.txt">Python requirements</a></p><div class="code-wrap"><button class="copy-code" type="button">Copy code</button><pre><code class="language-python">&quot;&quot;&quot;Run with Python 3 after installing examples/requirements.txt.&quot;&quot;&quot;
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+
+rng = np.random.default_rng(42)
+X = rng.normal(size=(240, 3)) * np.array([1, 10, 100])
+y = 2 + X @ np.array([2, -0.3, 0.01]) + rng.normal(0, 0.5, 240)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42
+)
+scaler = StandardScaler().fit(X_train)
+Z_train = scaler.transform(X_train)
+Z_test = scaler.transform(X_test)
+A = np.column_stack([np.ones(len(Z_train)), Z_train])
+A_test = np.column_stack([np.ones(len(Z_test)), Z_test])
+n = len(A)
+hessian = A.T @ A / n
+rate = 1 / np.linalg.eigvalsh(hessian).max()
+theta = np.zeros(A.shape[1])
+losses = []
+for iteration in range(10000):
+    error = A @ theta - y_train
+    losses.append(0.5 * np.mean(error ** 2))
+    gradient = A.T @ error / n
+    if np.linalg.norm(gradient) &lt; 1e-9:
+        break
+    theta -= rate * gradient
+else:
+    raise RuntimeError(&quot;Gradient descent did not converge&quot;)
+exact = np.linalg.lstsq(A, y_train, rcond=None)[0]
+np.testing.assert_allclose(theta, exact, atol=1e-7)
+pred = A_test @ theta
+model = LinearRegression().fit(Z_train, y_train)
+np.testing.assert_allclose(pred, model.predict(Z_test), atol=1e-7)
+assert np.all(np.diff(losses) &lt;= 1e-10)
+print(&quot;Learning rate:&quot;, rate, &quot;Updates:&quot;, iteration)
+
+print(&quot;Test MAE:&quot;, mean_absolute_error(y_test, pred))
+print(&quot;Test RMSE:&quot;, np.sqrt(mean_squared_error(y_test, pred)))
+print(&quot;Test R2:&quot;, r2_score(y_test, pred))
+
+plt.plot(losses)
+plt.xlabel(&quot;Batch gradient update&quot;)
+plt.ylabel(&quot;Training half-MSE&quot;)
+plt.title(&quot;Convergence of the stated objective&quot;)
+plt.tight_layout()
+plt.show()
+</code></pre></div>
+<p>A small change in loss can be a misleading stopping rule when progress is slow because of ill-conditioning. Checking gradient norm, a maximum iteration budget, and agreement with a known solution on a test problem provides a clearer diagnostic. Report failure to converge instead of silently returning an arbitrary last iterate.</p>
+<h2 id="variants">8. Batch, stochastic, and mini-batch updates</h2>
+<p>Batch gradient descent computes the exact empirical gradient over all n training observations for every update, costing roughly O(np) per dense pass. Stochastic gradient descent uses one sampled observation; mini-batch descent uses a subset. Their updates are noisy estimates of the full gradient, and step-size schedules become important.</p>
+<p>Shuffling and fixed random seeds help reproducibility for stochastic methods, but a fixed seed is not a statistical guarantee. For streaming data, changing distributions and feature scaling require additional design. A model trained with an online method must not silently recompute scaling on future evaluation rows.</p>
+<p>Early stopping can behave like implicit regularization because weakly identified directions may be learned slowly. That is a property of an incomplete optimization trajectory and its initialization, not equivalence to every possible ridge penalty. Distinguish deliberate early stopping selected on validation data from an optimizer that accidentally failed to converge.</p>
+
+<h3>Check gradients numerically</h3>
+<p>A central finite difference approximates one partial derivative by perturbing a coefficient in both directions. Let eⱼ be a vector with a one at coordinate j and zeros elsewhere, and let h be a small positive step. Compare the analytic gradient with [J(θ + heⱼ) − J(θ − heⱼ)]/(2h).</p>
+<div class="math">\frac{\partial J}{\partial\theta_j}\approx\frac{J(\boldsymbol\theta+h\mathbf e_j)-J(\boldsymbol\theta-h\mathbf e_j)}{2h}</div>
+<p>For the exact quadratic in this tutorial, truncation behaviour is especially simple, but floating-point cancellation still matters. Making h extremely tiny subtracts nearly equal values and can worsen the estimate. Use several moderate scales and compare relative as well as absolute error, particularly when true derivatives are close to zero.</p>
+<p>This check can expose a missing factor n, an incorrect residual sign, or an intercept column omitted from the gradient. It cannot establish that the dataset or evaluation design is correct. Numerical differentiation validates the relationship between the implemented objective and gradient, not the modelling claim around them.</p>
+<h3>Derive the effect of adding ridge</h3>
+<p>Suppose the half-MSE objective is augmented with λ‖β‖²/2, where β excludes the intercept. The slope gradient gains λβ, while the intercept gradient remains the mean prediction error. In an augmented parameter vector, a diagonal mask with zero for the intercept and ones for slopes represents this distinction.</p>
+<div class="math">\nabla J_{\rm reg}(\boldsymbol\theta)=\frac1nA^T(A\boldsymbol\theta-\mathbf y)+\lambda D\boldsymbol\theta,\qquad D=\operatorname{diag}(0,1,\ldots,1)</div>
+<p>The Hessian becomes AᵀA/n + λD, so the stable fixed learning rate must be reconsidered. Reusing a step size computed for an unregularized objective can be too aggressive after adding curvature. The penalty may improve conditioning by lifting weak slope directions while also increasing the largest eigenvalue.</p>
+<h3>Interpret learning curves correctly</h3>
+<p>An optimization trace plots loss against update count for one training dataset. A statistical learning curve plots performance against training sample count. They answer different questions. A descending optimization curve shows that a solver is making progress; it does not show that collecting more data would help or that the model is generalizing.</p>
+<p>When comparing batch and mini-batch methods, iteration counts are not directly comparable because one batch update may process the entire dataset while one mini-batch update processes only a small fraction. Compare epochs, processed examples, or measured runtime with the computational environment stated. Do not infer an efficiency ranking merely from which curve reaches a low value in fewer plotted steps.</p>
+
+<h2 id="interview">9. Interview questions</h2>
+<details><summary>1. Is gradient descent a regression model?</summary><p>No. It is an optimization algorithm that can minimize many differentiable objectives, including the squared loss of linear regression.</p></details>
+<details><summary>2. Why include 1/2 in the loss?</summary><p>It cancels the derivative's factor two. The optimum is unchanged, but gradient scale and a compatible learning rate change.</p></details>
+<details><summary>3. What controls the stable learning rate?</summary><p>For the fixed-step quadratic problem, the largest Hessian eigenvalue gives the bound η &lt; 2/λmax(H).</p></details>
+<details><summary>4. Why standardize features?</summary><p>It can reduce disparities in curvature caused by units, improving convergence. Strong correlations may still cause poor conditioning.</p></details>
+<details><summary>5. Can the objective be convex without a unique coefficient solution?</summary><p>Yes. A rank-deficient design gives a convex but not strictly convex quadratic, with flat directions and potentially many minimizers.</p></details>
+<details><summary>6. Why update all coordinates simultaneously?</summary><p>The batch-gradient formula evaluates every derivative at the same current vector. Sequentially changing that vector alters the algorithm.</p></details>
+<details><summary>7. How does stochastic descent differ?</summary><p>It uses sampled gradients, reducing work per update while introducing noise and often requiring a learning-rate schedule.</p></details>
+<details><summary>8. Does decreasing training loss guarantee generalization?</summary><p>No. It only describes optimization on the training objective. Generalization requires separate evaluation.</p></details>
+<h2 id="practice">10. Practice and takeaways</h2>
+<ul><li>Verify the scalar derivative with finite differences at several coefficients, using small but not excessively tiny perturbations.</li><li>Remove scaling and multiply one feature by 1,000. Recalculate the stability bound and compare convergence.</li><li>Implement mini-batch descent and compare its noisy loss trajectory with batch descent under a fixed data split.</li><li>Build an optimizer mini-lab that reports gradient norm, iteration count, and objective normalization alongside learning rate.</li></ul>
+<p>Optimization correctness starts with a precisely stated objective. The gradient, step-size scale, stopping rule, and numerical checks should all refer to that same objective.</p>
+<div class="sources"><h3>Further reading</h3><p><a href="https://scikit-learn.org/stable/modules/sgd.html">scikit-learn: stochastic gradient descent</a></p></div>
+<section class="related"><h2 id="related">Continue learning</h2><ul><li><a href="/articles/regression-evaluation-metrics/">Regression Evaluation Metrics — MAE, MSE, RMSE, and R²</a></li><li><a href="/articles/regression-assumptions-diagnostics/">Regression Assumptions, Diagnostics, and Common Pitfalls</a></li></ul></section><nav class="series-nav" aria-label="Series navigation"><a rel="prev" href="/articles/regression-evaluation-metrics/">← Previous<br>Regression Evaluation Metrics — MAE, MSE, RMSE, and R²</a><a rel="next" href="/articles/regression-assumptions-diagnostics/">Next →<br>Regression Assumptions, Diagnostics, and Common Pitfalls</a></nav></article></div></main><footer class="wrap site-footer"><a class="brand" href="/index.html">jyoti<span class="brand-dot">.</span></a><p>© <span id="year">2026</span> Jyoti Ranjan Jally</p><span>DATA. MODELS. MEANINGFUL SOFTWARE.</span><a href="#top">Back to top <svg class="icon icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V4m-6 6 6-6 6 6"/></svg></a></footer></body></html>

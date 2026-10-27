@@ -1,0 +1,348 @@
+[
+  {
+    "slug": "introduction-to-regression",
+    "title": "Introduction to Regression Analysis",
+    "summary": "Turn a prediction problem into a measurable experiment. Understand conditional means, baselines, residuals, and honest evaluation.",
+    "category": "Machine Learning",
+    "subcategory": "Regression",
+    "topicPath": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Regression"
+    ],
+    "tags": [
+      "regression",
+      "supervised learning",
+      "baselines"
+    ],
+    "difficulty": "Beginner",
+    "date": "2026-10-27",
+    "seriesOrder": 1,
+    "chart": "line",
+    "related": [
+      "simple-linear-regression",
+      "regression-evaluation-metrics",
+      "end-to-end-regression-project"
+    ],
+    "series": "Regression",
+    "content": "content/regression/introduction-to-regression.html",
+    "example": "examples/introduction-to-regression.py"
+  },
+  {
+    "slug": "simple-linear-regression",
+    "title": "Simple Linear Regression — Theory, Mathematics, and Python",
+    "summary": "Derive the least-squares line, work through a complete numerical example, and fit it with NumPy and scikit-learn.",
+    "category": "Machine Learning",
+    "subcategory": "Regression",
+    "topicPath": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Regression"
+    ],
+    "tags": [
+      "OLS",
+      "covariance",
+      "linear regression"
+    ],
+    "difficulty": "Beginner",
+    "date": "2026-10-27",
+    "seriesOrder": 2,
+    "chart": "line",
+    "related": [
+      "introduction-to-regression",
+      "multiple-linear-regression",
+      "regression-evaluation-metrics"
+    ],
+    "series": "Regression",
+    "content": "content/regression/simple-linear-regression.html",
+    "example": "examples/simple-linear-regression.py"
+  },
+  {
+    "slug": "multiple-linear-regression",
+    "title": "Multiple Linear Regression — Matrix Mathematics and Implementation",
+    "summary": "Move from one feature to a design matrix. Understand projections, rank, the pseudoinverse, and stable numerical solutions.",
+    "category": "Machine Learning",
+    "subcategory": "Regression",
+    "topicPath": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Regression"
+    ],
+    "tags": [
+      "matrices",
+      "rank",
+      "pseudoinverse"
+    ],
+    "difficulty": "Intermediate",
+    "date": "2026-10-27",
+    "seriesOrder": 3,
+    "chart": "residual",
+    "related": [
+      "simple-linear-regression",
+      "polynomial-regression",
+      "regression-evaluation-metrics"
+    ],
+    "series": "Regression",
+    "content": "content/regression/multiple-linear-regression.html",
+    "example": "examples/multiple-linear-regression.py"
+  },
+  {
+    "slug": "polynomial-regression",
+    "title": "Polynomial Regression — Nonlinear Relationships",
+    "summary": "Model curvature with a linear estimator. Explore polynomial degree, conditioning, and the cost of unnecessary flexibility.",
+    "category": "Machine Learning",
+    "subcategory": "Regression",
+    "topicPath": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Regression"
+    ],
+    "tags": [
+      "polynomials",
+      "bias variance",
+      "cross-validation"
+    ],
+    "difficulty": "Intermediate",
+    "date": "2026-10-27",
+    "seriesOrder": 4,
+    "chart": "polynomial",
+    "related": [
+      "multiple-linear-regression",
+      "ridge-regression",
+      "regression-evaluation-metrics"
+    ],
+    "series": "Regression",
+    "content": "content/regression/polynomial-regression.html",
+    "example": "examples/polynomial-regression.py"
+  },
+  {
+    "slug": "ridge-regression",
+    "title": "Ridge Regression — L2 Regularization",
+    "summary": "Derive coefficient shrinkage, connect the penalty to singular values, and translate lambda into scikit-learn alpha.",
+    "category": "Machine Learning",
+    "subcategory": "Regression",
+    "topicPath": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Regression"
+    ],
+    "tags": [
+      "ridge",
+      "L2",
+      "regularization"
+    ],
+    "difficulty": "Intermediate",
+    "date": "2026-10-27",
+    "seriesOrder": 5,
+    "chart": "ridge",
+    "related": [
+      "polynomial-regression",
+      "lasso-regression",
+      "regression-evaluation-metrics"
+    ],
+    "series": "Regression",
+    "content": "content/regression/ridge-regression.html",
+    "example": "examples/ridge-regression.py"
+  },
+  {
+    "slug": "lasso-regression",
+    "title": "Lasso Regression — L1 Regularization and Feature Selection",
+    "summary": "Understand exact zeros through subgradients and soft thresholding, then build a leakage-safe sparse regression pipeline.",
+    "category": "Machine Learning",
+    "subcategory": "Regression",
+    "topicPath": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Regression"
+    ],
+    "tags": [
+      "lasso",
+      "L1",
+      "feature selection"
+    ],
+    "difficulty": "Intermediate",
+    "date": "2026-10-27",
+    "seriesOrder": 6,
+    "chart": "lasso",
+    "related": [
+      "ridge-regression",
+      "elastic-net-regression",
+      "regression-evaluation-metrics"
+    ],
+    "series": "Regression",
+    "content": "content/regression/lasso-regression.html",
+    "example": "examples/lasso-regression.py"
+  },
+  {
+    "slug": "elastic-net-regression",
+    "title": "Elastic Net Regression — Combining L1 and L2",
+    "summary": "Combine sparsity and stability. Derive coordinate updates and tune alpha and l1_ratio inside cross-validation.",
+    "category": "Machine Learning",
+    "subcategory": "Regression",
+    "topicPath": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Regression"
+    ],
+    "tags": [
+      "elastic net",
+      "L1",
+      "L2"
+    ],
+    "difficulty": "Intermediate",
+    "date": "2026-10-27",
+    "seriesOrder": 7,
+    "chart": "elastic",
+    "related": [
+      "lasso-regression",
+      "regression-evaluation-metrics"
+    ],
+    "series": "Regression",
+    "content": "content/regression/elastic-net-regression.html",
+    "example": "examples/elastic-net-regression.py"
+  },
+  {
+    "slug": "regression-evaluation-metrics",
+    "title": "Regression Evaluation Metrics — MAE, MSE, RMSE, and R²",
+    "summary": "Calculate and interpret error metrics, negative R², adjusted R², and the trade-offs hidden by a single average.",
+    "category": "Machine Learning",
+    "subcategory": "Regression",
+    "topicPath": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Regression"
+    ],
+    "tags": [
+      "MAE",
+      "MSE",
+      "RMSE",
+      "R²"
+    ],
+    "difficulty": "Beginner",
+    "date": "2026-10-27",
+    "seriesOrder": 8,
+    "chart": "metrics",
+    "related": [
+      "elastic-net-regression",
+      "gradient-descent-linear-regression"
+    ],
+    "series": "Regression",
+    "content": "content/regression/regression-evaluation-metrics.html",
+    "example": "examples/regression-evaluation-metrics.py"
+  },
+  {
+    "slug": "gradient-descent-linear-regression",
+    "title": "Gradient Descent for Linear Regression — Mathematical Derivation and Python",
+    "summary": "Derive the gradient and its convergence condition, implement batch updates, and see what learning rate changes.",
+    "category": "Machine Learning",
+    "subcategory": "Regression",
+    "topicPath": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Regression"
+    ],
+    "tags": [
+      "optimization",
+      "gradient descent",
+      "learning rate"
+    ],
+    "difficulty": "Intermediate",
+    "date": "2026-10-27",
+    "seriesOrder": 9,
+    "chart": "descent",
+    "related": [
+      "regression-evaluation-metrics",
+      "regression-assumptions-diagnostics"
+    ],
+    "series": "Regression",
+    "content": "content/regression/gradient-descent-linear-regression.html",
+    "example": "examples/gradient-descent-linear-regression.py"
+  },
+  {
+    "slug": "regression-assumptions-diagnostics",
+    "title": "Regression Assumptions, Diagnostics, and Common Pitfalls",
+    "summary": "Separate fitting, unbiased estimation, inference, and prediction. Read residual patterns without overclaiming what they prove.",
+    "category": "Machine Learning",
+    "subcategory": "Regression",
+    "topicPath": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Regression"
+    ],
+    "tags": [
+      "residuals",
+      "diagnostics",
+      "data leakage"
+    ],
+    "difficulty": "Advanced",
+    "date": "2026-10-27",
+    "seriesOrder": 10,
+    "chart": "residual",
+    "related": [
+      "regression-evaluation-metrics",
+      "gradient-descent-linear-regression",
+      "ridge-vs-lasso-vs-elastic-net"
+    ],
+    "series": "Regression",
+    "content": "content/regression/regression-assumptions-diagnostics.html",
+    "example": "examples/regression-assumptions-diagnostics.py"
+  },
+  {
+    "slug": "ridge-vs-lasso-vs-elastic-net",
+    "title": "Ridge vs Lasso vs Elastic Net — Detailed Comparison",
+    "summary": "Compare objectives on a common scale, understand correlated features, and make a fair validation-based model choice.",
+    "category": "Machine Learning",
+    "subcategory": "Regression",
+    "topicPath": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Regression"
+    ],
+    "tags": [
+      "model selection",
+      "regularization",
+      "comparison"
+    ],
+    "difficulty": "Intermediate",
+    "date": "2026-10-27",
+    "seriesOrder": 11,
+    "chart": "compare",
+    "related": [
+      "regression-evaluation-metrics",
+      "regression-assumptions-diagnostics",
+      "end-to-end-regression-project"
+    ],
+    "series": "Regression",
+    "content": "content/regression/ridge-vs-lasso-vs-elastic-net.html",
+    "example": "examples/ridge-vs-lasso-vs-elastic-net.py"
+  },
+  {
+    "slug": "end-to-end-regression-project",
+    "title": "End-to-End Regression Project Using a Real Dataset",
+    "summary": "Build a reproducible diabetes-dataset experiment with a baseline, fold-local preprocessing, model selection, and a final test audit.",
+    "category": "Machine Learning",
+    "subcategory": "Regression",
+    "topicPath": [
+      "Machine Learning",
+      "Supervised Learning",
+      "Regression"
+    ],
+    "tags": [
+      "project",
+      "diabetes",
+      "pipelines"
+    ],
+    "difficulty": "Advanced",
+    "date": "2026-10-27",
+    "seriesOrder": 12,
+    "chart": "residual",
+    "related": [
+      "introduction-to-regression",
+      "regression-evaluation-metrics",
+      "ridge-vs-lasso-vs-elastic-net"
+    ],
+    "series": "Regression",
+    "content": "content/regression/end-to-end-regression-project.html",
+    "example": "examples/end-to-end-regression-project.py"
+  }
+]

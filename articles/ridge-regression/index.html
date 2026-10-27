@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ridge Regression — L2 Regularization | Jyoti Ranjan Jally</title><meta name="description" content="Derive coefficient shrinkage, connect the penalty to singular values, and translate lambda into scikit-learn alpha.">
+<link rel="canonical" href="https://jyotiranjanjally.github.io/articles/ridge-regression/"><meta property="og:title" content="Ridge Regression — L2 Regularization">
+<meta property="og:description" content="Derive coefficient shrinkage, connect the penalty to singular values, and translate lambda into scikit-learn alpha."><meta property="og:url" content="https://jyotiranjanjally.github.io/articles/ridge-regression/">
+<meta property="og:type" content="article"><meta name="theme-color" content="#f5f4f1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/assets/hub/hub.css">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('portfolio-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){document.documentElement.dataset.theme='light'}</script>
+<link rel="stylesheet" href="/assets/hub/vendor/katex/katex.min.css">
+<script defer src="/assets/hub/vendor/katex/katex.min.js"></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Ridge Regression \u2014 L2 Regularization", "description": "Derive coefficient shrinkage, connect the penalty to singular values, and translate lambda into scikit-learn alpha.", "datePublished": "2026-10-27", "author": {"@type": "Person", "name": "Jyoti Ranjan Jally", "url": "https://jyotiranjanjally.github.io"}, "mainEntityOfPage": "https://jyotiranjanjally.github.io/articles/ridge-regression/", "articleSection": ["Machine Learning", "Supervised Learning", "Regression"], "keywords": ["ridge", "L2", "regularization"], "proficiencyLevel": "Intermediate", "inLanguage": "en"}</script><script defer src="/app.js"></script><script defer src="/assets/hub/hub.js"></script>
+<script defer src="/assets/hub/charts.js"></script></head><body id="top" class="knowledge-hub">
+<a class="skip" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="/index.html" aria-label="Jyoti, home">jyoti<span class="brand-dot">.</span><span class="brand-caption">MACHINE LEARNING ENGINEER</span></a><button class="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch theme"><svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></svg><svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button><button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav"><span></span><span></span></button><nav id="main-nav" aria-label="Main navigation"><a href="/index.html#work">Projects</a><a href="/index.html#approach">Expertise</a><a href="/articles.html" aria-current="page">Articles</a><a class="nav-contact resume-link" href="/assets/Jyoti-Ranjan-Jally-Resume.pdf" download="Jyoti-Ranjan-Jally-Resume.pdf">Resume <span aria-hidden="true"><svg class="icon icon-arrow-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16m-6-6 6 6 6-6"/></svg></span></a></nav></header>
+<div class="reading-progress" aria-hidden="true"></div><main id="main" class="wrap"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/articles.html">Knowledge hub</a> / <a href="/articles.html?category=Machine+Learning">Machine Learning</a> / <a href="/articles.html?category=Machine+Learning&amp;topic=Supervised+Learning">Supervised Learning</a> / <a href="/articles.html?category=Machine+Learning&amp;topic=Regression">Regression</a></nav>
+<header class="reading-header"><p class="eyebrow">THE REGRESSION SERIES / 05 OF 12</p><h1>Ridge Regression — L2 Regularization</h1><p class="standfirst">Derive coefficient shrinkage, connect the penalty to singular values, and translate lambda into scikit-learn alpha.</p><div class="reading-meta"><span class="difficulty">Intermediate</span><span>11 min read</span><time datetime="2026-10-27">27 October 2026</time></div><nav class="article-tags" aria-label="Article tags"><a href="/articles.html?q=ridge">ridge</a><a href="/articles.html?q=L2">L2</a><a href="/articles.html?q=regularization">regularization</a></nav></header>
+<div class="reading-layout"><aside class="toc"><nav aria-label="Table of contents"><p class="eyebrow">ON THIS PAGE</p><ol><li><a href="#introduction">Stabilize a sensitive least-squares fit</a></li><li><a href="#intuition">Pay for coefficient magnitude</a></li><li><a href="#derivation">Center, differentiate, and solve</a></li><li><a href="#shrinkage">What exactly is being shrunk?</a></li><li><a href="#worked-example">Calculate a ridge fit</a></li><li><a href="#visualization">Inspect coefficient paths</a></li><li><a href="#python">Match the library&#x27;s objective</a></li><li><a href="#tradeoffs">Practical strengths and limits</a></li><li><a href="#interview">Interview questions</a></li><li><a href="#practice">Practice and takeaways</a></li></ol></nav><a href="/articles.html?category=Machine+Learning&amp;topic=Regression">Explore this topic ↗</a></aside>
+<article class="tutorial"><h2 id="introduction">1. Stabilize a sensitive least-squares fit</h2>
+<p>When several features carry nearly the same information, ordinary least squares can assign large positive and negative coefficients that cancel on the training data. Small changes to the observations may then cause large coefficient changes. Ridge regression discourages this behaviour by adding a squared-coefficient penalty to the loss.</p>
+<p>Ridge is useful for correlated measurements, many weak predictors, and polynomial feature sets. It deliberately introduces bias to reduce sensitivity. Whether that trade-off improves prediction is an empirical question for validation, not a theorem about every dataset.</p>
+<p>You will derive the ridge solution, understand shrinkage along singular directions, work a numerical example, and match a mathematical λ to scikit-learn's <code>alpha</code>. Prerequisites are matrix regression and differentiation of a quadratic form.</p>
+<h2 id="intuition">2. Pay for coefficient magnitude</h2>
+<p>Least squares rewards any coefficient change that lowers residual error. Ridge asks whether that improvement is worth the increase in coefficient magnitude. A large coefficient is not inherently wrong, but without regularization a noisy direction can receive a large coefficient simply because it improves training fit.</p>
+<p>Feature units matter. A one-unit coefficient on a feature measured in kilometres is not comparable to one on the same feature measured in metres. Standardizing features using training statistics makes the penalty's scale more consistent across columns. It is a modelling choice: the penalty expresses a preference for small coefficients in that chosen coordinate system.</p>
+<div class="math">\min_{\beta_0,\boldsymbol\beta}\left[\frac1n\sum_{i=1}^n(y_i-\beta_0-\mathbf x_i^T\boldsymbol\beta)^2+\lambda\sum_{j=1}^p\beta_j^2\right],\qquad\lambda\geq0</div>
+<p>There are n observations and p slopes. The intercept β₀ is excluded from the penalty. The nonnegative λ controls the trade-off. At λ = 0 the objective reduces to ordinary least squares. As λ grows, slope estimates are more strongly discouraged, and the prediction tends toward a constant model under standard centered conditions.</p>
+<h2 id="derivation">3. Center, differentiate, and solve</h2>
+<p>Let X<sub>c</sub> be the feature matrix after subtracting each training feature mean, and y<sub>c</sub> the target vector after subtracting its training mean. Optimizing the unpenalized intercept gives β₀ = y-bar − x-barᵀβ. We can therefore solve for slopes using centered data, then reconstruct the intercept.</p>
+<div class="math">J(\boldsymbol\beta)=\frac1n\|\mathbf y_c-X_c\boldsymbol\beta\|_2^2+\lambda\boldsymbol\beta^T\boldsymbol\beta</div>
+<div class="math">\nabla J=\frac2nX_c^T(X_c\boldsymbol\beta-\mathbf y_c)+2\lambda\boldsymbol\beta=0</div>
+<p>Multiply by n/2 and collect β. The identity matrix I has p rows and columns; adding nλI increases every eigenvalue of the Gram matrix by nλ.</p>
+<div class="math">(X_c^TX_c+n\lambda I)\hat{\boldsymbol\beta}=X_c^T\mathbf y_c</div>
+<p>For λ &gt; 0, the matrix is positive definite even if feature columns are dependent. The slope solution is unique. In software, solve the linear system rather than constructing an explicit inverse. The mathematical inverse notation describes the solution but does not prescribe the best algorithm.</p>
+<h2 id="shrinkage">4. What exactly is being shrunk?</h2>
+<p>Write the centered feature matrix as UDVᵀ, where D contains singular values s<sub>k</sub>. Along the k-th singular direction, ordinary least squares divides the corresponding target projection by s<sub>k</sub>. Ridge replaces that factor with s<sub>k</sub>/(s<sub>k</sub>² + nλ).</p>
+<div class="math">\hat{\boldsymbol\beta}_{\rm ridge}=V\operatorname{diag}\!\left(\frac{s_k}{s_k^2+n\lambda}\right)U^T\mathbf y_c</div>
+<p>Small singular values represent weakly supported feature directions. The ordinary inverse can amplify noise in those directions; ridge suppresses it. Compared with the OLS coefficient in a nonzero singular direction, the multiplier is s<sub>k</sub>²/(s<sub>k</sub>² + nλ), which lies between zero and one.</p>
+<p>This is shrinkage in the singular-vector basis. Individual coefficients in the original correlated-feature basis need not decrease monotonically as λ changes. Their combinations are being stabilized. In the special case of centered orthonormal columns, XᵀX/n = I, every coefficient has the simpler form β-hat<sub>j</sub> = z<sub>j</sub>/(1 + λ), where z = Xᵀy/n is the OLS coefficient vector.</p>
+<h2 id="worked-example">5. Calculate a ridge fit</h2>
+<p>Use x = [−1, 0, 1] and y = [−2, 0, 2]. Both means are zero, so the intercept is zero. There are n = 3 rows, xᵀx = 2, and xᵀy = 4. Ordinary least squares gives slope 2.</p>
+<p>With λ = 2/3 under our MSE convention, nλ = 2. The ridge slope is 4/(2 + 2) = 1. Predictions are [−1, 0, 1], residuals [−1, 0, 1], and MSE = 2/3. The penalty is (2/3)·1² = 2/3, giving total objective 4/3. At the OLS slope 2, MSE is zero but the penalty is 8/3, a larger objective.</p>
+<p>At x = 2, ridge predicts 2. If the true relationship remains y = 2x, the true target would be 4 and this prediction has squared error 4. This noiseless example demonstrates deliberate bias; it is not evidence that ridge always improves accuracy. Its advantage arises when variance reduction compensates for that bias in noisy finite samples.</p>
+<h2 id="visualization">6. Inspect coefficient paths</h2>
+<figure class="lab" data-chart="ridge"><div class="lab-heading"><span class="eyebrow">INTERACTIVE LAB</span><span>Change one variable. Observe the effect.</span></div><div class="lab-controls"></div><svg viewBox="0 0 700 340" role="img" aria-label="Interactive regression diagram"></svg><p class="chart-summary" aria-live="polite"></p><figcaption>Figure 1. A deterministic educational experiment; values are calculated from the displayed model. See the controls and summary for a text interpretation.</figcaption><noscript>Enable JavaScript to explore this diagram. The worked example below provides the numerical explanation.</noscript></figure>
+<p>The plotted paths use the orthonormal special case so every value can be computed exactly. They should not be mistaken for a fitted path on arbitrary correlated data. Unlike lasso, ridge does not generally create exact zeros at a finite positive penalty; coefficients approach zero continuously.</p>
+<h2 id="python">7. Match the library's objective</h2>
+<p>Scikit-learn's Ridge minimizes residual sum of squares plus <code>alpha</code> times the squared coefficient norm. Multiplying this tutorial's objective by n leaves its minimizer unchanged, so the corresponding library parameter is <code>alpha = n_train * lambda</code>. A library using half-MSE would require a different translation.</p>
+<p><a class="download-code" href="/examples/ridge-regression.py" download>Download the complete Python script ↓</a> · <a href="/examples/requirements.txt">Python requirements</a></p><div class="code-wrap"><button class="copy-code" type="button">Copy code</button><pre><code class="language-python">&quot;&quot;&quot;Run with Python 3 after installing examples/requirements.txt.&quot;&quot;&quot;
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.linear_model import Ridge
+
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+rng = np.random.default_rng(42)
+X = rng.normal(size=(260, 6))
+X[:, 1] = 0.8 * X[:, 0] + 0.2 * X[:, 1]
+y = 2 + X @ np.array([2.5, 1.5, 0, 0, -1, 0]) + rng.normal(0, 0.8, 260)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42
+)
+scaler = StandardScaler().fit(X_train)
+Z = scaler.transform(X_train)
+Z_test = scaler.transform(X_test)
+y_mean = y_train.mean()
+yc = y_train - y_mean
+n, p = Z.shape
+
+lam = 0.1
+beta = np.linalg.solve(Z.T @ Z + n * lam * np.eye(p), Z.T @ yc)
+pred = y_mean + Z_test @ beta
+pipe = make_pipeline(StandardScaler(), Ridge(alpha=n * lam))
+pipe.fit(X_train, y_train)
+np.testing.assert_allclose(pred, pipe.predict(X_test), atol=1e-9)
+print(&quot;Standardized coefficients:&quot;, beta)
+
+print(&quot;Test MAE:&quot;, mean_absolute_error(y_test, pred))
+print(&quot;Test RMSE:&quot;, np.sqrt(mean_squared_error(y_test, pred)))
+print(&quot;Test R2:&quot;, r2_score(y_test, pred))
+
+plt.scatter(y_test, pred, alpha=0.7)
+limits = [min(y_test.min(), pred.min()), max(y_test.max(), pred.max())]
+plt.plot(limits, limits, &quot;k--&quot;, label=&quot;Perfect prediction&quot;)
+plt.xlabel(&quot;Actual target&quot;)
+plt.ylabel(&quot;Predicted target&quot;)
+plt.legend()
+plt.tight_layout()
+plt.show()
+</code></pre></div>
+<p>The script estimates feature scaling only on the training subset, solves the centered ridge system from scratch, reconstructs predictions, and compares them against the pipeline. The selected λ is fixed for this numerical equivalence exercise. To choose it for a real problem, use a validation search with the entire preprocessing pipeline inside each fold.</p>
+<h2 id="tradeoffs">8. Practical strengths and limits</h2>
+<p>Ridge is a strong candidate when signal is spread across correlated predictors. It keeps all features in the model and often stabilizes predictions. Dense direct solvers can have costs similar to other quadratic linear systems; iterative and sparse solvers offer different trade-offs. Solver choice depends on matrix size, sparsity, and conditioning.</p>
+<p>Ridge does not perform explicit feature selection. If collecting each feature has a substantial cost, a dense model may be inconvenient even when it predicts well. The quadratic penalty also does not make squared-error regression robust to target outliers: large residuals still receive large weight.</p>
+<p>Preprocessing changes the penalty's meaning. Scaling on all rows leaks evaluation information, while failing to scale can cause arbitrary unit choices to determine which coefficients are penalized more severely. If some coefficients should receive different prior treatment, use an explicitly justified feature transformation or weighted penalty rather than assuming a uniform penalty is neutral.</p>
+
+<h3>A probabilistic interpretation of the penalty</h3>
+<p>Suppose errors are independent Gaussian with variance σ², and put independent zero-mean Gaussian priors with variance τ² on the slopes. Leave the intercept unpenalized. The negative log likelihood contributes SSE/(2σ²), and the negative log prior contributes ‖β‖²/(2τ²), apart from constants that do not affect the optimum.</p>
+<div class="math">\frac{\mathrm{SSE}}{2\sigma^2}+\frac{\|\boldsymbol\beta\|_2^2}{2\tau^2}\quad\Longrightarrow\quad\frac{\mathrm{SSE}}n+\frac{\sigma^2}{n\tau^2}\|\boldsymbol\beta\|_2^2</div>
+<p>Multiplying by 2σ²/n gives this tutorial's ridge objective with λ = σ²/(nτ²). The maximum a posteriori coefficient estimate is therefore a ridge solution under these assumptions. A smaller prior variance expresses a stronger preference for slopes near zero. This is one interpretation of the penalty, not a requirement that every practical ridge model be fitted as a Bayesian analysis.</p>
+<p>The prior is defined in the feature coordinate system. A spherical prior after standardization is not spherical in raw units. Treating preprocessing as a purely cosmetic step misses this change in the implied preference over prediction functions. Likewise, a point MAP estimate is not a complete posterior uncertainty analysis; it does not automatically provide calibrated prediction intervals.</p>
+<h3>Effective degrees of freedom</h3>
+<p>For centered data at a fixed penalty, ridge predictions are a linear transformation of the targets. Write that smoothing matrix as Hλ = X(XᵀX + nλI)⁻¹Xᵀ. Its trace measures the effective number of fitted directions in this linear-smoother sense.</p>
+<div class="math">\operatorname{df}_{\rm slopes}(\lambda)=\operatorname{tr}(H_\lambda)=\sum_k\frac{s_k^2}{s_k^2+n\lambda}</div>
+<p>The singular values sₖ are those of the centered feature matrix. Each nonzero direction contributes close to one when the penalty is weak and close to zero when it is strong. With an estimated unpenalized intercept, add one for that constant direction. This is more informative than simply counting all p nonzero coefficients: a dense ridge model can have much lower effective flexibility than unregularized OLS.</p>
+<p>This fixed-penalty expression does not account for the extra adaptivity of choosing λ by searching the data. Nor does it justify plugging p into an OLS adjusted-R² formula and calling it a complete ridge complexity correction. Use the expression to understand shrinkage, and use a properly separated validation procedure to assess the selected model.</p>
+<p>When tuning a normalized λ, remember that each fold has its own training count. If you map to the library alpha with a full-dataset n while fitting smaller folds, you change the normalized strength. Searching library alpha directly is valid when documented, but it answers a differently parameterized selection question.</p>
+
+<h2 id="interview">9. Interview questions</h2>
+<details><summary>1. Why does ridge resolve singularity?</summary><p>With positive λ, adding nλI makes the centered Gram matrix positive definite. Every slope direction receives positive quadratic curvature.</p></details>
+<details><summary>2. Why leave the intercept unpenalized?</summary><p>Penalizing it pulls the prediction level toward zero, an arbitrary origin for many targets. Centering removes the intercept from the slope penalty naturally.</p></details>
+<details><summary>3. Does ridge always improve test error?</summary><p>No. It trades bias for variance. The useful penalty depends on the sample, noise, feature structure, and deployment distribution.</p></details>
+<details><summary>4. Can ridge coefficients be exactly zero?</summary><p>They can be zero due to the data or symmetry, but ridge does not generally induce exact sparsity as a consequence of its smooth penalty.</p></details>
+<details><summary>5. How does alpha relate to λ here?</summary><p>For scikit-learn Ridge's sum-of-squares objective and this tutorial's MSE objective, alpha equals the training sample count times λ.</p></details>
+<details><summary>6. Why is scaling important?</summary><p>The penalty acts on coefficient values, which depend on feature units. Standardization makes a unit coefficient correspond to a comparable feature-scale change.</p></details>
+<details><summary>7. Is every original coefficient monotone in λ?</summary><p>No. The singular directions shrink monotonically by their factors; correlated original-coordinate coefficients can follow more complicated paths.</p></details>
+<details><summary>8. Is ridge a robust regression method?</summary><p>Not in the outlier-resistance sense. Its squared residual loss can still be dominated by large target errors.</p></details>
+<h2 id="practice">10. Practice and takeaways</h2>
+<ul><li>Repeat the worked example for λ = 0, 1/3, and 2. Compare both MSE and the penalized objective.</li><li>Duplicate a feature and compare OLS coefficient stability with ridge under small target perturbations.</li><li>Search a logarithmic alpha grid inside a pipeline. Record validation mean and variability, then evaluate the selected model on a reserved test set.</li><li>Build a correlated-sensor prediction mini-project and document the feature units and scaling policy.</li></ul>
+<p>Ridge changes the optimization objective, not merely the numerical solver. Its most useful interpretation is controlled sensitivity in weakly supported directions, with an unpenalized prediction level and an explicit objective convention.</p>
+<div class="sources"><h3>Further reading</h3><p><a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html">Ridge objective and solver reference</a></p></div>
+<section class="related"><h2 id="related">Continue learning</h2><ul><li><a href="/articles/polynomial-regression/">Polynomial Regression — Nonlinear Relationships</a></li><li><a href="/articles/lasso-regression/">Lasso Regression — L1 Regularization and Feature Selection</a></li><li><a href="/articles/regression-evaluation-metrics/">Regression Evaluation Metrics — MAE, MSE, RMSE, and R²</a></li></ul></section><nav class="series-nav" aria-label="Series navigation"><a rel="prev" href="/articles/polynomial-regression/">← Previous<br>Polynomial Regression — Nonlinear Relationships</a><a rel="next" href="/articles/lasso-regression/">Next →<br>Lasso Regression — L1 Regularization and Feature Selection</a></nav></article></div></main><footer class="wrap site-footer"><a class="brand" href="/index.html">jyoti<span class="brand-dot">.</span></a><p>© <span id="year">2026</span> Jyoti Ranjan Jally</p><span>DATA. MODELS. MEANINGFUL SOFTWARE.</span><a href="#top">Back to top <svg class="icon icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V4m-6 6 6-6 6 6"/></svg></a></footer></body></html>

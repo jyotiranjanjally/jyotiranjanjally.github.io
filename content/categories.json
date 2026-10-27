@@ -1,0 +1,45 @@
+{
+  "Machine Learning": {
+    "Supervised Learning": [
+      "Regression",
+      "Classification"
+    ],
+    "Clustering": [],
+    "Model Evaluation": [],
+    "Feature Engineering": [],
+    "Ensemble Learning": [],
+    "Dimensionality Reduction": []
+  },
+  "Data Structures & Algorithms": {
+    "Arrays and Strings": [],
+    "Hash Maps": [],
+    "Linked Lists": [],
+    "Stacks and Queues": [],
+    "Trees and Graphs": [],
+    "Sorting and Searching": [],
+    "Dynamic Programming": [],
+    "Recursion and Backtracking": [],
+    "Time and Space Complexity": []
+  },
+  "Python Programming": {
+    "Python Fundamentals": [],
+    "Object-Oriented Programming": [],
+    "Advanced Python": [],
+    "NumPy and Pandas": [],
+    "Python for Machine Learning": []
+  },
+  "Deep Learning": {
+    "Neural Networks": [],
+    "Backpropagation": [],
+    "CNNs": [],
+    "RNNs and LSTMs": [],
+    "Transformers": []
+  },
+  "Artificial Intelligence": {
+    "Generative AI": [],
+    "Large Language Models": [],
+    "RAG": [],
+    "AI Agents": [],
+    "Prompt Engineering": []
+  }
+}

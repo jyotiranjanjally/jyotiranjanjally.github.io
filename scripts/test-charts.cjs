@@ -1,0 +1,10 @@
+const assert = require('node:assert/strict');
+const math = require('../assets/hub/charts.js');
+const close = (a,b) => assert.ok(Math.abs(a-b)<1e-9, `${a} != ${b}`);
+close(math.soft(2,1),1); close(math.soft(-2,1),-1); close(math.soft(.4,1),0);
+close(math.ridge(2,1),1); close(math.elastic(2,1,.5),1);
+close(math.elastic(2,1,1),math.soft(2,1)); close(math.elastic(2,1,0),math.ridge(2,1));
+const m=math.metrics([1,2,3],[1,2,5]); close(m.mae,2/3);close(m.mse,4/3);close(m.r2,-1);
+assert.ok(Number.isNaN(math.metrics([1,1],[1,2]).r2));
+const beta=math.polynomial([-1,0,1],[2,1,2],2); [1,0,1].forEach((b,i)=>close(beta[i],b));
+console.log('Passed chart numerical checks: thresholds, penalty endpoints, metrics, and polynomial fit.');

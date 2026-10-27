@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Elastic Net Regression — Combining L1 and L2 | Jyoti Ranjan Jally</title><meta name="description" content="Combine sparsity and stability. Derive coordinate updates and tune alpha and l1_ratio inside cross-validation.">
+<link rel="canonical" href="https://jyotiranjanjally.github.io/articles/elastic-net-regression/"><meta property="og:title" content="Elastic Net Regression — Combining L1 and L2">
+<meta property="og:description" content="Combine sparsity and stability. Derive coordinate updates and tune alpha and l1_ratio inside cross-validation."><meta property="og:url" content="https://jyotiranjanjally.github.io/articles/elastic-net-regression/">
+<meta property="og:type" content="article"><meta name="theme-color" content="#f5f4f1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/assets/hub/hub.css">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('portfolio-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){document.documentElement.dataset.theme='light'}</script>
+<link rel="stylesheet" href="/assets/hub/vendor/katex/katex.min.css">
+<script defer src="/assets/hub/vendor/katex/katex.min.js"></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Elastic Net Regression \u2014 Combining L1 and L2", "description": "Combine sparsity and stability. Derive coordinate updates and tune alpha and l1_ratio inside cross-validation.", "datePublished": "2026-10-27", "author": {"@type": "Person", "name": "Jyoti Ranjan Jally", "url": "https://jyotiranjanjally.github.io"}, "mainEntityOfPage": "https://jyotiranjanjally.github.io/articles/elastic-net-regression/", "articleSection": ["Machine Learning", "Supervised Learning", "Regression"], "keywords": ["elastic net", "L1", "L2"], "proficiencyLevel": "Intermediate", "inLanguage": "en"}</script><script defer src="/app.js"></script><script defer src="/assets/hub/hub.js"></script>
+<script defer src="/assets/hub/charts.js"></script></head><body id="top" class="knowledge-hub">
+<a class="skip" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="/index.html" aria-label="Jyoti, home">jyoti<span class="brand-dot">.</span><span class="brand-caption">MACHINE LEARNING ENGINEER</span></a><button class="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch theme"><svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></svg><svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button><button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav"><span></span><span></span></button><nav id="main-nav" aria-label="Main navigation"><a href="/index.html#work">Projects</a><a href="/index.html#approach">Expertise</a><a href="/articles.html" aria-current="page">Articles</a><a class="nav-contact resume-link" href="/assets/Jyoti-Ranjan-Jally-Resume.pdf" download="Jyoti-Ranjan-Jally-Resume.pdf">Resume <span aria-hidden="true"><svg class="icon icon-arrow-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16m-6-6 6 6 6-6"/></svg></span></a></nav></header>
+<div class="reading-progress" aria-hidden="true"></div><main id="main" class="wrap"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/articles.html">Knowledge hub</a> / <a href="/articles.html?category=Machine+Learning">Machine Learning</a> / <a href="/articles.html?category=Machine+Learning&amp;topic=Supervised+Learning">Supervised Learning</a> / <a href="/articles.html?category=Machine+Learning&amp;topic=Regression">Regression</a></nav>
+<header class="reading-header"><p class="eyebrow">THE REGRESSION SERIES / 07 OF 12</p><h1>Elastic Net Regression — Combining L1 and L2</h1><p class="standfirst">Combine sparsity and stability. Derive coordinate updates and tune alpha and l1_ratio inside cross-validation.</p><div class="reading-meta"><span class="difficulty">Intermediate</span><span>11 min read</span><time datetime="2026-10-27">27 October 2026</time></div><nav class="article-tags" aria-label="Article tags"><a href="/articles.html?q=elastic+net">elastic net</a><a href="/articles.html?q=L1">L1</a><a href="/articles.html?q=L2">L2</a></nav></header>
+<div class="reading-layout"><aside class="toc"><nav aria-label="Table of contents"><p class="eyebrow">ON THIS PAGE</p><ol><li><a href="#introduction">Combine sparsity with stabilization</a></li><li><a href="#intuition">Two different kinds of restraint</a></li><li><a href="#derivation">Derive the coordinate update</a></li><li><a href="#worked-example">A complete numerical calculation</a></li><li><a href="#visualization">Separate strength from mixture</a></li><li><a href="#python">Tune the full pipeline</a></li><li><a href="#tradeoffs">Choosing and interpreting a mixed penalty</a></li><li><a href="#interview">Interview questions</a></li><li><a href="#practice">Practice and takeaways</a></li></ol></nav><a href="/articles.html?category=Machine+Learning&amp;topic=Regression">Explore this topic ↗</a></aside>
+<article class="tutorial"><h2 id="introduction">1. Combine sparsity with stabilization</h2>
+<p>Lasso can remove features but may choose unpredictably among strongly correlated alternatives. Ridge stabilizes correlated directions but usually retains a dense coefficient vector. Elastic net combines their penalties so a model can encourage sparsity while adding quadratic curvature to the optimization problem.</p>
+<p>This is useful for correlated feature groups, high-dimensional engineered representations, and situations where a purely sparse or purely dense fit is too restrictive. The combination is not automatically superior. It introduces a second hyperparameter, so validation must determine whether the added flexibility is worthwhile.</p>
+<p>You will derive the elastic-net coordinate update, calculate a one-feature solution, distinguish total penalty from mixing fraction, and run a leakage-safe search. Familiarity with ridge, lasso, and soft thresholding is helpful.</p>
+<h2 id="intuition">2. Two different kinds of restraint</h2>
+<p>The L1 term creates a threshold below which a coefficient can be zero. The L2 term reduces the magnitude of coefficients that survive. Together they can produce a model that is sparse without forcing all correlated information into a single selected feature.</p>
+<p>Consider two almost identical sensor readings. Lasso can often achieve a similar residual fit by assigning most weight to either one. A quadratic penalty prefers sharing a fixed total weight rather than concentrating it: 1² + 1² is smaller than 2² + 0². This encourages a grouping tendency, although it does not guarantee that every correlated pair has identical coefficients or is selected together.</p>
+<div class="math">J=\frac1{2n}\|\mathbf y-\beta_0\mathbf1-X\boldsymbol\beta\|_2^2+\lambda\left[\rho\|\boldsymbol\beta\|_1+\frac{1-\rho}{2}\|\boldsymbol\beta\|_2^2\right]</div>
+<p>Here λ ≥ 0 is total penalty strength, ρ between zero and one is the L1 mixing fraction, and β₀ is excluded from both penalties. There are n observations, p slope coefficients, and a ones vector of length n. The L1 norm sums absolute coefficient values; the squared L2 norm sums squared values.</p>
+<p>With ρ = 1, this is lasso. With ρ = 0, it is a ridge-type objective using half-MSE and a half-scaled quadratic penalty. Under the ridge tutorial's MSE + λ<sub>ridge</sub>L2 convention, the pure-L2 case corresponds to λ<sub>ridge</sub> = λ. In scikit-learn Ridge's sum-of-squares convention, that means <code>alpha = n * lambda</code>.</p>
+<h2 id="derivation">3. Derive the coordinate update</h2>
+<p>Center features and targets to eliminate the intercept. For coordinate j, let r<sub>j</sub> be the partial residual excluding that feature's contribution, a<sub>j</sub> = x<sub>j</sub>ᵀx<sub>j</sub>/n, and z<sub>j</sub> = x<sub>j</sub>ᵀr<sub>j</sub>/n. The terms depending on candidate coefficient b are:</p>
+<div class="math">\frac12\big(a_j+\lambda(1-\rho)\big)b^2-z_jb+\lambda\rho|b|</div>
+<p>The L2 penalty adds to the quadratic curvature. The L1 penalty changes the threshold. Applying the same positive, negative, and zero cases as in lasso gives:</p>
+<div class="math">\beta_j\leftarrow\frac{S(z_j,\lambda\rho)}{a_j+\lambda(1-\rho)},\qquad S(z,t)=\operatorname{sign}(z)\max(|z|-t,0)</div>
+<p>For b &gt; 0, differentiation gives (a<sub>j</sub> + λ(1 − ρ))b − z<sub>j</sub> + λρ = 0. For b &lt; 0, the L1 derivative changes sign. When |z<sub>j</sub>| ≤ λρ, zero satisfies the subgradient condition. The denominator explains why elastic net further shrinks a nonzero soft-thresholded coefficient.</p>
+<p>For λ &gt; 0 and ρ &lt; 1, the quadratic penalty makes the slope objective strongly convex, producing a unique slope solution even with rank-deficient features. At the lasso endpoint, uniqueness needs additional conditions. The numerical stopping criterion still matters; a unique mathematical solution does not imply an iterative solver has reached it.</p>
+<h2 id="worked-example">4. A complete numerical calculation</h2>
+<p>Use x = [−1,0,1], y = [−2,0,2], n = 3. Then a = 2/3 and z = 4/3. Choose λ = 2/3 and ρ = 1/2. The threshold is λρ = 1/3; the added denominator term is also 1/3. Therefore the coefficient is (4/3 − 1/3)/(2/3 + 1/3) = 1.</p>
+<p>The intercept is zero. Predictions are [−1,0,1], residuals [−1,0,1], and MSE = 2/3. Half-MSE is 1/3. The L1 contribution is λρ|β| = 1/3 and the L2 contribution is λ(1 − ρ)β²/2 = 1/6. Total objective is 5/6.</p>
+<p>At coefficient 2, the residual loss is zero but the penalty is 2/3 + 2/3 = 4/3, which is larger. At coefficient zero, half-MSE is 4/3. Our coefficient 1 improves the stated objective relative to both candidates. At x = 2 it predicts 2; if the true target is 4, the squared error is 4. Again, the worked example illustrates optimization rather than guaranteed test improvement.</p>
+<h2 id="visualization">5. Separate strength from mixture</h2>
+<figure class="lab" data-chart="elastic"><div class="lab-heading"><span class="eyebrow">INTERACTIVE LAB</span><span>Change one variable. Observe the effect.</span></div><div class="lab-controls"></div><svg viewBox="0 0 700 340" role="img" aria-label="Interactive regression diagram"></svg><p class="chart-summary" aria-live="polite"></p><figcaption>Figure 1. A deterministic educational experiment; values are calculated from the displayed model. See the controls and summary for a text interpretation.</figcaption><noscript>Enable JavaScript to explore this diagram. The worked example below provides the numerical explanation.</noscript></figure>
+<p>At a fixed λ, increasing ρ raises the soft-threshold level and reduces the extra quadratic shrinkage. The net effect on a particular coefficient depends on its magnitude. “More L1” and “more total regularization” are different changes; the controls should not be interpreted as interchangeable.</p>
+<h2 id="python">6. Tune the full pipeline</h2>
+<p>Scikit-learn ElasticNet uses <code>alpha</code> for λ and <code>l1_ratio</code> for ρ in the objective above. The script first checks a scratch coordinate-descent solution at fixed parameters, then searches both hyperparameters using training-only cross-validation. Scaling lives inside the pipeline, so each validation fold is transformed using only its corresponding training fold.</p>
+<p><a class="download-code" href="/examples/elastic-net-regression.py" download>Download the complete Python script ↓</a> · <a href="/examples/requirements.txt">Python requirements</a></p><div class="code-wrap"><button class="copy-code" type="button">Copy code</button><pre><code class="language-python">&quot;&quot;&quot;Run with Python 3 after installing examples/requirements.txt.&quot;&quot;&quot;
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.linear_model import ElasticNet
+from sklearn.model_selection import GridSearchCV, KFold
+
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+rng = np.random.default_rng(42)
+X = rng.normal(size=(260, 6))
+X[:, 1] = 0.8 * X[:, 0] + 0.2 * X[:, 1]
+y = 2 + X @ np.array([2.5, 1.5, 0, 0, -1, 0]) + rng.normal(0, 0.8, 260)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42
+)
+scaler = StandardScaler().fit(X_train)
+Z = scaler.transform(X_train)
+Z_test = scaler.transform(X_test)
+y_mean = y_train.mean()
+yc = y_train - y_mean
+n, p = Z.shape
+
+def coordinate_descent(Z, yc, lam, rho, tolerance=1e-10, max_iter=50000):
+    n, p = Z.shape
+    beta = np.zeros(p)
+    residual = yc.copy()
+    mean_square = (Z * Z).mean(axis=0)
+    for iteration in range(max_iter):
+        previous = beta.copy()
+        for j in range(p):
+            residual += Z[:, j] * beta[j]
+            z = Z[:, j] @ residual / n
+            denominator = mean_square[j] + lam * (1 - rho)
+            if denominator &lt;= 0:
+                beta[j] = 0
+            else:
+                beta[j] = (np.sign(z) * max(abs(z) - lam * rho, 0)
+                           / denominator)
+            residual -= Z[:, j] * beta[j]
+        if np.max(np.abs(beta - previous)) &lt; tolerance:
+            return beta
+    raise RuntimeError(&quot;Coordinate descent did not converge&quot;)
+
+lam, rho = 0.1, 0.5
+beta = coordinate_descent(Z, yc, lam, rho)
+fixed = make_pipeline(StandardScaler(), ElasticNet(alpha=lam, l1_ratio=rho,
+                                                   tol=1e-10, max_iter=50000))
+fixed.fit(X_train, y_train)
+np.testing.assert_allclose(y_mean + Z_test @ beta, fixed.predict(X_test), atol=1e-6)
+search = GridSearchCV(
+    make_pipeline(StandardScaler(), ElasticNet(max_iter=50000)),
+    {&quot;elasticnet__alpha&quot;: [0.01, 0.1, 1.0], &quot;elasticnet__l1_ratio&quot;: [0.2, 0.5, 0.8]},
+    scoring=&quot;neg_mean_squared_error&quot;, cv=KFold(5, shuffle=True, random_state=42)
+)
+search.fit(X_train, y_train)
+pred = search.predict(X_test)
+print(&quot;Selected parameters:&quot;, search.best_params_)
+
+print(&quot;Test MAE:&quot;, mean_absolute_error(y_test, pred))
+print(&quot;Test RMSE:&quot;, np.sqrt(mean_squared_error(y_test, pred)))
+print(&quot;Test R2:&quot;, r2_score(y_test, pred))
+
+plt.scatter(y_test, pred, alpha=0.7)
+limits = [min(y_test.min(), pred.min()), max(y_test.max(), pred.max())]
+plt.plot(limits, limits, &quot;k--&quot;, label=&quot;Perfect prediction&quot;)
+plt.xlabel(&quot;Actual target&quot;)
+plt.ylabel(&quot;Predicted target&quot;)
+plt.legend()
+plt.tight_layout()
+plt.show()
+</code></pre></div>
+<p>The direct numerical comparison uses fixed λ and ρ. The grid search subsequently chooses a different model if validation prefers it; those predictions are not expected to match the fixed-parameter scratch model. Keep those two purposes separate: one tests implementation, the other selects a predictive configuration.</p>
+<h2 id="tradeoffs">7. Choosing and interpreting a mixed penalty</h2>
+<p>Use a logarithmic grid for total penalty, because useful strengths often span orders of magnitude. Try several mixing fractions with meaningful distance from both endpoints. If the result repeatedly chooses an endpoint, a simpler ridge or lasso formulation may be sufficient. The grid itself is part of the model-selection procedure and should not be repeatedly redesigned after looking at the test score.</p>
+<p>With positively correlated standardized features, the L2 component discourages extreme allocation of weight to just one member. This can improve coefficient stability, but the extent depends on correlation, target alignment, penalty values, and sampling noise. Negative correlation can produce related behaviour with opposite-signed coefficients.</p>
+<p>A dense coordinate-descent pass is roughly linear in the number of matrix entries. Searching several λ and ρ values multiplies fitting work. Warm starts and regularization paths can improve efficiency, but a small transparent search is often a better first baseline than an elaborate adaptive procedure.</p>
+<p>Elastic net retains squared-error sensitivity to outliers and linear-model limitations. It also requires a coherent scaling policy. If one feature is represented by many correlated encodings, its collective treatment can differ from a feature represented by a single column. Representation design and regularization cannot be evaluated independently.</p>
+
+<h3>Make the grouping argument concrete</h3>
+<p>Suppose two standardized columns are exactly identical, and their combined contribution uses a positive total coefficient c. Any nonnegative split β₁ + β₂ = c produces the same predictions. The L1 penalty is also unchanged because |β₁| + |β₂| = c. The L2 contribution, however, is minimized by sharing the total equally.</p>
+<div class="math">\beta_1^2+\beta_2^2=\frac{(\beta_1+\beta_2)^2+(\beta_1-\beta_2)^2}{2}</div>
+<p>With c fixed, only the squared difference can change. A positive L2 penalty therefore chooses β₁ = β₂ = c/2. For c = 2, the equal split has squared norm 2, whereas [2,0] has squared norm 4. This exact duplicate-column example explains the stabilizing mechanism without claiming identical behaviour for merely correlated columns.</p>
+<p>For nearly identical columns, differing correlations with the residual matter too. The penalty trades off these fit differences against unequal allocation. If features are not scaled comparably, equal coefficient values no longer correspond to equal effects, which is another reason to define the representation before interpreting grouping.</p>
+<h3>Separate the effective L1 and L2 weights</h3>
+<p>Parameterizing the penalty with a = λρ and b = λ(1 − ρ) is often easier to reason about than changing λ and ρ simultaneously. Holding a fixed while increasing b preserves the zero threshold in a coordinate update but increases shrinkage of surviving coordinates. Holding b fixed while increasing a raises the threshold. Those controlled comparisons isolate mechanisms more clearly than changing a mixing fraction and assuming only one effect changes.</p>
+<p>For example, λ = 0.8 and ρ = 0.25 give a = 0.2 and b = 0.6. If you want a = 0.2 and b = 1.0 instead, set λ = 1.2 and ρ = 1/6. A fixed λ grid and a fixed ρ grid induce a particular nonrectangular sampling of a–b combinations; this is acceptable, but it is a search design choice rather than a neutral universal default.</p>
+<h3>Interpret a flat validation surface</h3>
+<p>Several parameter combinations can produce almost indistinguishable validation errors. Report that uncertainty rather than treating the single numerical minimum as a uniquely identified optimum. A simpler or more stable configuration within the competitive region can be a defensible choice if the selection rule is specified using training validation only.</p>
+<p>When comparing stability, rerun preprocessing and selection within each resample. Holding a globally fitted scaler fixed changes the procedure being evaluated. Track prediction variation as well as coefficient variation: coefficients may move while correlated contributions cancel, leaving operational predictions almost unchanged.</p>
+
+<h2 id="interview">8. Interview questions</h2>
+<details><summary>1. What do alpha and l1_ratio mean?</summary><p>Under scikit-learn's objective, alpha is total λ and l1_ratio is the L1 fraction ρ. They control strength and mixture separately.</p></details>
+<details><summary>2. What happens at ρ = 1?</summary><p>The L2 component disappears and the objective becomes lasso with the same half-MSE convention.</p></details>
+<details><summary>3. How does the pure-L2 endpoint map to Ridge?</summary><p>Multiplying the elastic-net objective at ρ = 0 by 2n gives SSE + nλ‖β‖², so scikit-learn Ridge alpha is nλ.</p></details>
+<details><summary>4. Why can elastic net group correlated features?</summary><p>The squared penalty favours sharing weight across similar directions rather than concentrating the same total effect in one coefficient. It is a tendency, not a universal grouping guarantee.</p></details>
+<details><summary>5. What is the coordinate update?</summary><p>Soft-threshold the partial feature-residual correlation at λρ, then divide by the feature's mean square plus λ(1 − ρ).</p></details>
+<details><summary>6. When is the slope solution unique?</summary><p>A positive L2 component makes the objective strongly convex in slopes, so the solution is unique even when X is rank deficient.</p></details>
+<details><summary>7. Does adding L2 eliminate sparsity?</summary><p>No. The L1 component still supplies a nonzero threshold when λρ is positive. The L2 part shrinks surviving coefficients.</p></details>
+<details><summary>8. Why tune preprocessing inside cross-validation?</summary><p>Learning scaling from validation rows lets their distribution influence training. A pipeline ensures each fold's fitted transformations use its training portion only.</p></details>
+<h2 id="practice">9. Practice and takeaways</h2>
+<ul><li>Repeat the worked example for ρ = 0, 1/2, and 1, translating the objectives before comparing numerical penalties.</li><li>Create two nearly identical informative features. Compare selection frequency and coefficient dispersion for lasso and elastic net across resamples.</li><li>Plot validation error over a two-dimensional penalty grid. Identify a stable region rather than interpreting a tiny difference as decisive.</li><li>Build a correlated-feature forecasting baseline and report its feature representation, scaling, search grid, and test boundary.</li></ul>
+<p>Elastic net combines a thresholding mechanism and a stabilizing quadratic term. Understanding the objective makes parameter names, endpoint behaviour, and coordinate updates precise.</p>
+<div class="sources"><h3>Further reading</h3><p><a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html">ElasticNet objective and parameter conventions</a></p></div>
+<section class="related"><h2 id="related">Continue learning</h2><ul><li><a href="/articles/lasso-regression/">Lasso Regression — L1 Regularization and Feature Selection</a></li><li><a href="/articles/regression-evaluation-metrics/">Regression Evaluation Metrics — MAE, MSE, RMSE, and R²</a></li></ul></section><nav class="series-nav" aria-label="Series navigation"><a rel="prev" href="/articles/lasso-regression/">← Previous<br>Lasso Regression — L1 Regularization and Feature Selection</a><a rel="next" href="/articles/regression-evaluation-metrics/">Next →<br>Regression Evaluation Metrics — MAE, MSE, RMSE, and R²</a></nav></article></div></main><footer class="wrap site-footer"><a class="brand" href="/index.html">jyoti<span class="brand-dot">.</span></a><p>© <span id="year">2026</span> Jyoti Ranjan Jally</p><span>DATA. MODELS. MEANINGFUL SOFTWARE.</span><a href="#top">Back to top <svg class="icon icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V4m-6 6 6-6 6 6"/></svg></a></footer></body></html>
